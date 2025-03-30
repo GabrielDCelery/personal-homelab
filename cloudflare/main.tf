@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 4"
-    }
-  }
-}
-
 # A record for the root domain
 resource "cloudflare_record" "root_a" {
   zone_id = var.cloudflare_zone_id
