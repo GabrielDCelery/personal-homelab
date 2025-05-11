@@ -13,18 +13,23 @@ variable "domain_ip" {
   type        = string
 }
 
-variable "caa_issuers" {
-  description = "List of allowed CAA issuers"
+variable "cloudflare_api_token" {
+  description = "The API token used for deployment"
+  type        = string
+}
+
+variable "certificate_issuers_allowlist" {
+  description = "List of allowed certificate issuers for creating CAA records"
   type = list(object({
     tag   = string
     value = string
   }))
   default = [
-    { tag = "issue", value = "pki.goog" },
     { tag = "issue", value = "digicert.com" },
-    { tag = "issue", value = "sectigo.com" },
-    { tag = "issue", value = "comodoca.com" },
-    { tag = "issue", value = "globalsign.com" },
-    { tag = "issue", value = "letsencrypt.org" },
+    # { tag = "issue", value = "pki.goog" },
+    # { tag = "issue", value = "sectigo.com" },
+    # { tag = "issue", value = "comodoca.com" },
+    # { tag = "issue", value = "globalsign.com" },
+    # { tag = "issue", value = "letsencrypt.org" },
   ]
 }

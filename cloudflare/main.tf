@@ -20,7 +20,7 @@ resource "cloudflare_record" "www" {
 
 # CAA records for certificate authorities
 resource "cloudflare_record" "caa_records" {
-  for_each = { for idx, issuer in var.caa_issuers : "${issuer.tag}-${issuer.value}" => issuer }
+  for_each = { for idx, issuer in var.certificate_issuers_allowlist : "${issuer.tag}-${issuer.value}" => issuer }
   zone_id  = var.cloudflare_zone_id
   name     = var.domain
   type     = "CAA"
