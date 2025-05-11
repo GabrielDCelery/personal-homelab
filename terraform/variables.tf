@@ -8,6 +8,11 @@ variable "azure_homelab_subscription_id" {
   type        = string
 }
 
+variable "cloudflare_account_id" {
+  description = "The Cloudflare account id"
+  type        = string
+}
+
 variable "cloudflare_api_token" {
   description = "The API token used for deployment"
   type        = string

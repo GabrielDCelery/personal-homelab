@@ -5,10 +5,11 @@ module "azure" {
 }
 
 module "cloudflare" {
-  source             = "./modules/cloudflare"
-  domain_ip          = var.domain_ip
-  domain             = var.domain
-  cloudflare_zone_id = var.cloudflare_zone_id
+  source                = "./modules/cloudflare"
+  domain_ip             = var.domain_ip
+  domain                = var.domain
+  cloudflare_account_id = var.cloudflare_account_id
+  cloudflare_zone_id    = var.cloudflare_zone_id
 }
 
 output "azure_homelab_subscription_details" {
