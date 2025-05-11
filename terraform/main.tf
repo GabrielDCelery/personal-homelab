@@ -1,6 +1,7 @@
 module "azure" {
   source                        = "./modules/azure"
   azure_homelab_subscription_id = var.azure_homelab_subscription_id
+  azure_admin_email             = var.azure_admin_email
 }
 
 module "cloudflare" {
@@ -8,4 +9,8 @@ module "cloudflare" {
   domain_ip          = var.domain_ip
   domain             = var.domain
   cloudflare_zone_id = var.cloudflare_zone_id
+}
+
+output "azure_homelab_subscription_details" {
+  value = module.azure.homelab_subscription_details
 }
