@@ -1,3 +1,8 @@
+variable "cloudflare_api_token" {
+  description = "The API token used for deployment"
+  type        = string
+}
+
 variable "cloudflare_zone_id" {
   description = "The zone ID for the Cloudflare domain"
   type        = string
@@ -10,11 +15,6 @@ variable "domain" {
 
 variable "domain_ip" {
   description = "The IP address for the domain's A record"
-  type        = string
-}
-
-variable "cloudflare_api_token" {
-  description = "The API token used for deployment"
   type        = string
 }
 
