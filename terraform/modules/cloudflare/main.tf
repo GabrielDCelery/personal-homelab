@@ -33,3 +33,14 @@ resource "cloudflare_dns_record" "www" {
 #   }
 # }
 #
+
+# resource "cloudflare_access_identity_provider" "azure_oauth" {
+#   account_id = var.cloudflare_account_id
+#   name       = "Azure SSO"
+#   type       = "azure"
+#   config {
+#     client_id     = azuread_application.cloudflare_sso.application_id
+#     client_secret = azuread_application_password.cloudflare_sso.value
+#     directory_id  = data.azuread_client_config.current.tenant_id
+#   }
+# }

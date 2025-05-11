@@ -17,3 +17,29 @@ resource "azurerm_consumption_budget_subscription" "homelab_montly_budget" {
     contact_emails = [var.azure_admin_email]
   }
 }
+
+# resource "azuread_application" "cloudflare_sso" {
+#   display_name = "Cloudflare SSO"
+#   web {
+#     homepage_url  = "https://dash.cloudflare.com"
+#     redirect_uris = ["https://dash.cloudflare.com/auth/oidc/callback"]
+#   }
+#
+#   group_membership_claims = ["SecurityGroup"]
+#   optional_claims {
+#     id_token {
+#       name                  = "groups"
+#       essential             = false
+#       additional_properties = []
+#     }
+#   }
+# }
+#
+# resource "azuread_service_principal" "cloudflare_sso" {
+#   client_id = azuread_application.cloudflare_sso.client_id
+# }
+#
+# resource "azuread_application_password" "cloudflare_sso" {
+#   application_id = azuread_application.cloudflare_sso.id
+#   display_name   = "Cloudflare SSO Secret"
+# }
