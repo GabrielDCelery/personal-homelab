@@ -3,7 +3,7 @@ data "azurerm_subscription" "homelab_subscription" {
 }
 
 resource "azurerm_consumption_budget_subscription" "homelab_montly_budget" {
-  name            = "Homelab monthly budget"
+  name            = "homelab_montly_budget"
   subscription_id = data.azurerm_subscription.homelab_subscription.id
   amount          = 20
   time_grain      = "Monthly"

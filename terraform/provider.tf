@@ -7,7 +7,7 @@ terraform {
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "=3.0.0"
+      version = "~> 4.0.0"
     }
   }
 }
@@ -17,7 +17,7 @@ provider "cloudflare" {
 }
 
 provider "azurerm" {
-  features {
-  }
+  subscription_id = var.azure_homelab_subscription_id
+  features {}
 }
 
