@@ -1,3 +1,8 @@
+variable "azure_homelab_subscription_id" {
+  description = "The ID of the homelab subscription"
+  type        = string
+}
+
 variable "cloudflare_api_token" {
   description = "The API token used for deployment"
   type        = string

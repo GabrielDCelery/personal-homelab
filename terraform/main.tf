@@ -1,5 +1,6 @@
 module "azure" {
-  source = "./modules/azure"
+  source                        = "./modules/azure"
+  azure_homelab_subscription_id = var.azure_homelab_subscription_id
 }
 
 module "cloudflare" {
