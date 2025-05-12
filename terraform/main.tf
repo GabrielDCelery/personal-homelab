@@ -10,8 +10,10 @@ module "cloudflare" {
   domain                = var.domain
   cloudflare_account_id = var.cloudflare_account_id
   cloudflare_zone_id    = var.cloudflare_zone_id
+  azure_sso_app_details = module.azure.azure_sso_app_details
 }
 
-output "azure_homelab_subscription_details" {
-  value = module.azure.homelab_subscription_details
-}
+# output "azure_homelab_subscription_details" {
+#   value = module.azure.homelab_subscription_details
+# }
+#

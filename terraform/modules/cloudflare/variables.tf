@@ -33,3 +33,12 @@ variable "certificate_issuers_allowlist" {
     # { tag = "issue", value = "letsencrypt.org" },
   ]
 }
+
+variable "azure_sso_app_details" {
+  description = "Azure SSO app details"
+  type = object({
+    client_id     = string
+    client_secret = string
+    tenant_id     = string
+  })
+}

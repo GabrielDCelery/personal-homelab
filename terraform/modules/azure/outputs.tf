@@ -9,3 +9,11 @@ output "homelab_subscription_details" {
     spending_limit        = data.azurerm_subscription.homelab_subscription.spending_limit
   }
 }
+
+output "azure_sso_app_details" {
+  value = {
+    client_id     = azuread_application.cloudflare_sso.client_id
+    client_secret = sensitive(azuread_application_password.cloudflare_sso.value)
+    tenant_id     = data.azurerm_subscription.homelab_subscription.tenant_id
+  }
+}
