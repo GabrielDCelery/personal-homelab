@@ -28,7 +28,7 @@ resource "azuread_service_principal" "msgraph" {
 resource "azuread_application" "cloudflare_sso" {
   display_name = "Cloudflare SSO"
   web {
-    # homepage_url  = "https://gaborzeller.cloudflareaccess.com"
+    homepage_url  = "https://gaborzeller.cloudflareaccess.com"
     redirect_uris = ["https://gaborzeller.cloudflareaccess.com/cdn-cgi/access/callback"]
   }
   group_membership_claims = ["SecurityGroup"]
