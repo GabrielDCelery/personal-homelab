@@ -92,3 +92,8 @@ resource "azuread_application_password" "cloudflare_sso" {
   display_name   = "Cloudflare SSO Secret"
 }
 
+resource "azurerm_resource_group" "terraform_subscription" {
+  name       = "terraform"
+  location   = "UK South"
+  managed_by = data.azurerm_subscription.homelab_subscription.id
+}
