@@ -5,4 +5,4 @@ tasks:
     cmd: terraform plan
   deploy:
     dir: terraform
-    cmd: terraform apply
+    cmd: terraform apply -auto-approve
