@@ -51,13 +51,13 @@ resource "cloudflare_zero_trust_access_identity_provider" "azure_oauth" {
   type    = "azureAD"
 }
 
-resource "cloudflare_zero_trust_access_policy" "app_launcher_access" {
-  name       = "app_launcher_access"
-  decision   = "allow"
-  account_id = var.cloudflare_account_id
-  include = [{
-    auth_method = {
-      auth_method = "pwd, mfa"
-    }
-  }]
-}
+# resource "cloudflare_zero_trust_access_policy" "app_launcher_access" {
+#   name       = "app_launcher_access"
+#   decision   = "allow"
+#   account_id = var.cloudflare_account_id
+#   include = [{
+#     auth_method = {
+#       auth_method = "pwd, mfa"
+#     }
+#   }]
+# }
