@@ -6,3 +6,6 @@ tasks:
   deploy:
     dir: terraform
     cmd: terraform apply -auto-approve
+  remove:
+    dir: terraform
+    cmd: terraform destroy
