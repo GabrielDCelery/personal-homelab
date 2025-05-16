@@ -1,3 +1,11 @@
+module "tf_azure_remote_state" {
+  source                = "../modules/terraform_az_remote_state"
+  username              = var.username
+  environment           = var.environment
+  azure_region          = var.azure_region
+  azure_subscription_id = var.azure_homelab_subscription_id
+}
+
 module "azure_budget" {
   source                = "../modules/azure_monthly_budget"
   notification_emails   = var.azure_budget_notification_emails

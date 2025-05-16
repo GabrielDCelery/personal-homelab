@@ -1,8 +1,3 @@
-variable "azure_admin_email" {
-  description = "Admin email for my Azure account"
-  type        = string
-}
-
 variable "username" {
   description = "Username all lower characters"
   type        = string
@@ -23,7 +18,3 @@ variable "azure_region" {
   type        = string
 }
 
-variable "azure_monthly_budget_amount" {
-  description = "Monthly Azure budget amount"
-  type        = number
-}
