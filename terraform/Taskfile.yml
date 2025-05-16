@@ -1,0 +1,17 @@
+version: '3'
+tasks:
+  terraform.apply.dev:
+    dir: '{{.TASKFILE_DIR}}/environments/dev'
+    cmd: terraform apply -auto-approve
+  terraform.apply.prod:
+    dir: '{{.TASKFILE_DIR}}/environments/prod'
+    cmd: terraform apply -auto-approve
+  terraform.apply.global:
+    dir: '{{.TASKFILE_DIR}}/global'
+    cmd: terraform apply -auto-approve
+  terraform.apply:
+    dir: '{{.TASKFILE_DIR}}'
+    cmds:
+      - task terraform.apply.global
+      - task terraform.apply.dev
+      - task terraform.apply.prod
