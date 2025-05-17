@@ -25,7 +25,8 @@ This is the `terraform` infra of my personal homelab.
 
 Infrastructure for managing remote state
 
-[!WARN] This is responsible for the remote terraform containers, do not touch!
+> [!WARNING]
+> This is responsible for the remote terraform containers, do not touch!
 
 ### `/global`
 
