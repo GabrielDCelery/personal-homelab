@@ -1,35 +1,35 @@
 version: '3'
 tasks:
-  terraform.destroy.dev:
+  tf.destroy.dev:
     dir: '{{.TASKFILE_DIR}}/environments/dev'
     cmd: terraform destroy
-  terraform.destroy.prod:
+  tf.destroy.prod:
     dir: '{{.TASKFILE_DIR}}/environments/prod'
     cmd: terraform destroy
-  terraform.destroy.global:
+  tf.destroy.global:
     dir: '{{.TASKFILE_DIR}}/global'
     cmd: terraform destroy
-  terraform.plan.dev:
+  tf.plan.dev:
     dir: '{{.TASKFILE_DIR}}/environments/dev'
     cmd: terraform plan
-  terraform.plan.prod:
+  tf.plan.prod:
     dir: '{{.TASKFILE_DIR}}/environments/prod'
     cmd: terraform plan
-  terraform.plan.global:
+  tf.plan.global:
     dir: '{{.TASKFILE_DIR}}/global'
     cmd: terraform plan
-  terraform.apply.dev:
+  tf.apply.dev:
     dir: '{{.TASKFILE_DIR}}/environments/dev'
     cmd: terraform apply
-  terraform.apply.prod:
+  tf.apply.prod:
     dir: '{{.TASKFILE_DIR}}/environments/prod'
     cmd: terraform apply
-  terraform.apply.global:
+  tf.apply.global:
     dir: '{{.TASKFILE_DIR}}/global'
     cmd: terraform apply
-  terraform.apply:
+  tf.apply:
     dir: '{{.TASKFILE_DIR}}'
     cmds:
-      - task terraform.apply.global
-      - task terraform.apply.dev
-      - task terraform.apply.prod
+      - task tf.apply.global
+      - task tf.apply.dev
+      - task tf.apply.prod
