@@ -1,11 +1,61 @@
-# What is this?
+# Personal homelab infrastructure
 
-This is the configuration for my personal Cloudflare instance.
+## What is this?
 
-# How to install
+This is the `terraform` infra of my personal homelab.
 
-1. Initialize the project
+## Project structure
 
 ```sh
-terraform init # install providers
+/
+├── bootstrap/      # bootstraping infra
+├── environments/   # environment specific infra
+│   ├── dev/        #
+│   └── prod        #
+├── global/         # global infra shared across all envs
+├── modules/        # reusable modules
+├── Taskfile.yml    # taskfile to manage deployments
+└── README.md       # project documentation
+
+```
+
+## Directory Descriptions
+
+### `/bootstrap`
+
+Infrastructure for managing remote state
+
+[!WARN] This is responsible for the remote terraform containers, do not touch!
+
+### `/global`
+
+The infrastructure for deploying globally shared resources across all environments. Examples: `montly budget`, `cloudflare dashboard sso`
+
+### `/environments`
+
+Environment specific infrastructure
+
+- `/dev`: dev environment
+- `/prod`: prod environment
+
+### `/moduels`
+
+Reusable environment agnosic terraform modules
+
+### `Taskfile.yml`
+
+Entry point for running deployment related tasks
+
+## Getting started
+
+Have the following installed:
+
+- [Terraform](https://developer.hashicorp.com/terraform)
+- [Task](https://taskfile.dev/)
+
+## Usage
+
+```sh
+task --list-all
+task tf.apply.dev   # deploy dev environment
 ```
