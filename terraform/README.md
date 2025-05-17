@@ -38,7 +38,7 @@ Environment specific infrastructure
 - `/dev`: dev environment
 - `/prod`: prod environment
 
-### `/moduels`
+### `/modules`
 
 Reusable environment agnosic terraform modules
 
