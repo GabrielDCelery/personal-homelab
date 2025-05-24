@@ -13,5 +13,5 @@ This is the repository storing scripts, documentation and configuration details 
 
 ## Project documentation
 
-[On premise network](./documentation/on-prem-network.md)
-[Homelab specifications](./documentation/homelab-specifications.md)
+- [On premise network](./documentation/on-prem-network.md)
+- [Homelab specifications](./documentation/homelab-specifications.md)
