@@ -1,28 +1,17 @@
-# personal-homelab
+## What is this?
 
-## Network diagram
+This is the repository storing scripts, documentation and configuration details of my personal homelab.
 
-![Homelab network diagram](homelab-network.png)
+## Project structure
 
-## Components
+```sh
+/
+├── documentation/  # homelab documenatation
+├── terraform/      # terraform files for deploying infrastrucutre
+└── README.md       # project summary
+```
 
-### Motherboard
+## Project documentation
 
-ASUS Prime B450M-AII
-
-### CPU
-
-AMD Ryzen 3 3200G (3.6GHz, 4 cores)
-
-- base clock speed 3.6GHz (max 4)
-- 4 CPU cores (4 threads, no hyperthreading!)
-- 65 Watts
-
-### RAM
-
-crucial M.2 SSD
-- 500 GB
-- PCIe 4.0
-- NVMe
-
-
+[On premise network](./documentation/on-prem-network.md)
+[Homelab specifications](./documentation/homelab-specifications.md)
