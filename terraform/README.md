@@ -16,7 +16,6 @@ This is the `terraform` infra of my personal homelab.
 ├── modules/        # reusable modules
 ├── Taskfile.yml    # taskfile to manage deployments
 └── README.md       # project documentation
-
 ```
 
 ## Directory Descriptions
