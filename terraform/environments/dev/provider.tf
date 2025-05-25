@@ -13,6 +13,10 @@ terraform {
       source  = "hashicorp/azuread"
       version = "~> 3.0.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
   }
   backend "azurerm" {
     resource_group_name  = "tf-rem-state-homelab"
@@ -22,8 +26,15 @@ terraform {
   }
 }
 
+provider "cloudflare" {
+  api_token = sensitive(var.cloudflare_api_token)
+}
+
 provider "azurerm" {
   subscription_id = var.azure_homelab_subscription_id
   features {}
 }
 
+provider "aws" {
+  region = var.aws_region
+}
