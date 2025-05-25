@@ -1,7 +1,13 @@
 baseURL: https://example.org/
 languageCode: en-us
-title: My New Hugo Site
+title: Gabor Zeller
 theme: ["PaperMod"]
 params:
   contact:
     email: contact@gaborzeller.com
+menu:
+  main:
+    - identifier: about
+      name: About
+      url: /about/
+      weight: 10
