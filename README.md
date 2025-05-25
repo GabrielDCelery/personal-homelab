@@ -6,6 +6,7 @@ This is the repository storing scripts, documentation and configuration details 
 
 ```sh
 /
+├── blog/           # personal blog powered by hugo
 ├── documentation/  # homelab documenatation
 ├── terraform/      # terraform files for deploying infrastrucutre
 └── README.md       # project summary
