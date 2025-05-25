@@ -8,30 +8,30 @@ This is the `terraform` infra of my personal homelab.
 
 ```sh
 /
-├── bootstrap/      # bootstraping infra
-├── environments/   # environment specific infra
-│   ├── dev/        #
-│   └── prod        #
-├── global/         # global infra shared across all envs
-├── modules/        # reusable modules
-├── Taskfile.yml    # taskfile to manage deployments
-└── README.md       # project documentation
+├── deployments/        # the actual deployments
+│   ├── bootstrap/      # bootstrapping infra
+│   ├── environments/   # environment specific deployments
+│   └── global          # shared/global deployments
+├── modules/            # reusable modules
+├── scripts/            # useful scripts
+├── Taskfile.yml        # taskfile to manage deployments
+└── README.md           # project documentation
 ```
 
 ## Directory Descriptions
 
-### `/bootstrap`
+### `/deployments/bootstrap`
 
 Infrastructure for managing remote state
 
 > [!WARNING]
 > This is responsible for the remote terraform containers, do not touch!
 
-### `/global`
+### `/deployments/global`
 
 The infrastructure for deploying globally shared resources across all environments. Examples: `montly budget`, `cloudflare dashboard sso`
 
-### `/environments`
+### `/deployments/environments`
 
 Environment specific infrastructure
 

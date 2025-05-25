@@ -13,13 +13,21 @@ terraform {
       source  = "hashicorp/azuread"
       version = "~> 3.0.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
   }
   backend "azurerm" {
-    resource_group_name  = "tf-rem-state-homelab"
+    resource_group_name  = "tfremstatehomelabgaze"
     storage_account_name = "tfremstatehomelabgaze"
-    container_name       = "tf-rem-state-container-homelab"
-    key                  = "terraform.prod.tfstate"
+    container_name       = "tfremstatehomelabgaze"
+    key                  = "terraform.dev.tfstate"
   }
+}
+
+provider "cloudflare" {
+  api_token = sensitive(var.cloudflare_api_token)
 }
 
 provider "azurerm" {
@@ -27,3 +35,6 @@ provider "azurerm" {
   features {}
 }
 
+provider "aws" {
+  region = var.aws_region
+}

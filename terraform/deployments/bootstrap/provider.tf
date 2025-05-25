@@ -7,9 +7,9 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name  = "tf-rem-state-homelab"
+    resource_group_name  = "tfremstatehomelabgaze"
     storage_account_name = "tfremstatehomelabgaze"
-    container_name       = "tf-rem-state-container-homelab"
+    container_name       = "tfremstatehomelabgaze"
     key                  = "terraform.bootstrap.tfstate"
   }
 }
