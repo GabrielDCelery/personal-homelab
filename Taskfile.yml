@@ -4,34 +4,48 @@ includes:
   blog: ./blog
   terraform: ./terraform
 
+vars:
+  ENVIRONMENTS:
+    - dev
+    - prod
+
 tasks:
-  deploy:dev:
-    desc: Deploy dev environment
+  _deploy:
+    internal: true
+    desc: 'Internal template for deploying an environment'
+    vars:
+      ENV: '{{.ENV}}'
     cmds:
-      - task: blog:build:dev
-      - task: terraform:deploy:dev
+      - task: blog:build:{{.ENV}}
+      - task: terraform:deploy:{{.ENV}}
 
-  destroy:dev:
-    desc: Destroy dev environment
+  _destroy:
+    internal: true
+    desc: 'Internal template for destroying an environment'
+    vars:
+      ENV: '{{.ENV}}'
     cmds:
-      - task: terraform:destroy:dev
+      - task: terraform:destroy:{{.ENV}}
 
-  deploy:prod:
-    desc: Deploy prod environment
+  deploy:
+    desc: 'Deploy a specific environment (usage: task deploy ENV=dev)'
     cmds:
-      - task: blog:build:prod
-      - task: terraform:deploy:prod
+      - task: _deploy
+        vars:
+          ENV: '{{.ENV}}'
 
-  destroy:prod:
-    desc: Destroy prod environment
+  destroy:
+    desc: 'Destroy a specific environment (usage: task destroy ENV=dev)'
     cmds:
-      - task: terraform:destroy:prod
+      - task: _destroy
+        vars:
+          ENV: '{{.ENV}}'
 
   deploy:all:
     desc: Deploy all environments
     cmds:
       - task: terraform:deploy:global
-      - task: deploy:dev
-      - task: deploy:prod
+      - task: deploy ENV=dev
+      - task: deploy ENV=prod
 
 
