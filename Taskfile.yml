@@ -1,0 +1,37 @@
+version: '3'
+
+includes:
+  blog: ./blog
+  terraform: ./terraform
+
+tasks:
+  deploy:dev:
+    desc: Deploy dev environment
+    cmds:
+      - task: blog:build:dev
+      - task: terraform:deploy:dev
+
+  destroy:dev:
+    desc: Destroy dev environment
+    cmds:
+      - task: terraform:destroy:dev
+
+  deploy:prod:
+    desc: Deploy prod environment
+    cmds:
+      - task: blog:build:prod
+      - task: terraform:deploy:prod
+
+  destroy:prod:
+    desc: Destroy prod environment
+    cmds:
+      - task: terraform:destroy:prod
+
+  deploy:all:
+    desc: Deploy all environments
+    cmds:
+      - task: terraform:deploy:global
+      - task: deploy:dev
+      - task: deploy:prod
+
+

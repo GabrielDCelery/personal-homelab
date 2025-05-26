@@ -1,35 +1,42 @@
 version: '3'
+vars:
+  ENVIRONMENT: '{{ .ENVIRONMENT | default "dev" }}'
+
 tasks:
-  tf.destroy.dev:
-    dir: '{{.TASKFILE_DIR}}/environments/dev'
-    cmd: terraform destroy
-  tf.destroy.prod:
-    dir: '{{.TASKFILE_DIR}}/environments/prod'
-    cmd: terraform destroy
-  tf.destroy.global:
-    dir: '{{.TASKFILE_DIR}}/global'
-    cmd: terraform destroy
-  tf.plan.dev:
-    dir: '{{.TASKFILE_DIR}}/environments/dev'
-    cmd: terraform plan
-  tf.plan.prod:
-    dir: '{{.TASKFILE_DIR}}/environments/prod'
-    cmd: terraform plan
-  tf.plan.global:
-    dir: '{{.TASKFILE_DIR}}/global'
-    cmd: terraform plan
-  tf.apply.dev:
-    dir: '{{.TASKFILE_DIR}}/environments/dev'
+  deploy:
+    internal: true
+    dir: '{{.TASKFILE_DIR}}/deployments/environments/{{.ENVIRONMENT}}'
     cmd: terraform apply
-  tf.apply.prod:
-    dir: '{{.TASKFILE_DIR}}/environments/prod'
-    cmd: terraform apply
-  tf.apply.global:
-    dir: '{{.TASKFILE_DIR}}/global'
-    cmd: terraform apply
-  tf.apply:
-    dir: '{{.TASKFILE_DIR}}'
+
+  destroy:
+    internal: true
+    dir: '{{.TASKFILE_DIR}}/deployments/environments/{{.ENVIRONMENT}}'
+    cmd: terraform destroy
+
+  deploy:dev:
     cmds:
-      - task tf.apply.global
-      - task tf.apply.dev
-      - task tf.apply.prod
+      - task: deploy
+        vars:
+          ENVIRONMENT: dev
+
+  deploy:prod:
+    cmds:
+      - task: deploy
+        vars:
+          ENVIRONMENT: prod
+
+  destroy:dev:
+    cmds:
+      - task: destroy
+        vars:
+          ENVIRONMENT: dev
+
+  destroy:prod:
+    cmds:
+      - task: destroy
+        vars:
+          ENVIRONMENT: prod
+
+  deploy:global:
+    dir: '{{.TASKFILE_DIR}}/deployments/global'
+    cmd: terraform apply
