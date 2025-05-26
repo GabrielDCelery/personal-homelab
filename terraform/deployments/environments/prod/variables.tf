@@ -18,3 +18,34 @@ variable "azure_region" {
   type        = string
 }
 
+variable "aws_account_id" {
+  description = "AWS account ID"
+  type        = string
+}
+
+variable "aws_region" {
+  description = "The AWS region"
+  type        = string
+}
+
+variable "domain_name" {
+  description = "personal blog domain name"
+  type        = string
+}
+
+variable "cloudflare_api_token" {
+  description = "cloudlflare api token"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_zone_id" {
+  description = "cloudflare zone id"
+  type        = string
+}
+
+variable "cloudflare_domain_cname_name" {
+  type        = string
+  description = "cloudflare domain cname name"
+}
+
