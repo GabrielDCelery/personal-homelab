@@ -7,10 +7,12 @@
     - name: Get host information
       debug:
         msg: "Successfully connected to {{ ansible_hostname }} running {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
     - name: Update apt package cache
       become: true
       apt:
         update_cache: yes
+
     - name: Install required packages for Docker repository
       become: true
       ansible.builtin.apt:
@@ -18,18 +20,21 @@
           - ca-certificates
           - curl
         state: present
+
     - name: Create Docker keyring directory
       become: true
       file:
         path: /etc/apt/keyrings
         state: directory
         mode: '0755'
+
     - name: Download Docker's GPG key
       become: true
       get_url:
         url: https://download.docker.com/linux/ubuntu/gpg
         dest: /etc/apt/keyrings/docker.asc
         mode: '0644'
+
     - name: Add Docker repository
       become: true
       apt_repository:
@@ -37,6 +42,7 @@
         state: present
         filename: docker
         update_cache: yes
+
     - name: Install Docker packages
       become: true
       ansible.builtin.apt:
@@ -48,12 +54,14 @@
           - docker-compose-plugin
         state: present
         update_cache: yes
+
     - name: Add user to docker group
       become: true
       user:
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
+
     - name: Enable Docker service
       become: true
       systemd:
