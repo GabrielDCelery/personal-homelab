@@ -2,11 +2,8 @@
   hosts: control_plane
   gather_facts: true
   tasks:
-    - name: Ping test
+    - name: Ping control plane
       ping:
-    - name: Get host information
-      debug:
-        msg: "Successfully connected to {{ ansible_hostname }} running {{ ansible_distribution }} {{ ansible_distribution_version }}"
 
     - name: Update apt package cache
       become: true
