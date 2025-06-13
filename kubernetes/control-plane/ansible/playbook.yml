@@ -2,9 +2,6 @@
   hosts: control_plane
   gather_facts: true
   tasks:
-    - name: Ping control plane
-      ping:
-
     - name: Import Docker installation tasks
       ansible.builtin.import_tasks: tasks/install-docker.yml
       tags:
