@@ -1,0 +1,34 @@
+- name: Update apt package cache
+  become: true
+  apt:
+    update_cache: yes
+
+- name: Install required packages for Kubernetes
+  become: true
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+    state: present
+
+- name: Disable swap
+  become: true
+  ansible.builtin.command: swapoff -a
+
+- name: Disable swap in /etc/fstab
+  become: true
+  ansible.builtin.replace:
+    path: /etc/fstab
+    # Any line that that does not already start with # - [^#]
+    # .*? contains any characters
+    # `\sswap\s+sw\s+` matches swap entries looking for
+    # `\s` whitespace
+    # `swap` literal word swap
+    # `\s+` one or more whitespace
+    # `sw` the swap flag in fstab
+    # `(.*)$ captures the rest of the line until the end`
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    # Adds a # comment character at the start of the line
+    # `\1` refers to the entire matched line in the regexp
+    replace: '# \1'
