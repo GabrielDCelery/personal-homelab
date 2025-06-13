@@ -59,3 +59,10 @@
     state: present
     update_cache: yes
 
+- name: Enable and start kubelet service
+  become: true
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: yes
+    state: started
+
