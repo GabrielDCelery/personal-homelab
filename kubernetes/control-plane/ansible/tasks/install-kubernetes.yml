@@ -44,5 +44,18 @@
   become: true
   shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
 
+- name: Update apt package cache
+  become: true
+  apt:
+    update_cache: yes
 
+- name: Install Kubernetes packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+    update_cache: yes
 
