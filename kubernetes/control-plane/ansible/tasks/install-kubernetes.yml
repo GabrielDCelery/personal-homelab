@@ -32,3 +32,17 @@
     # Adds a # comment character at the start of the line
     # `\1` refers to the entire matched line in the regexp
     replace: '# \1'
+
+- name: Add Kubernetes GPG key
+  become: true
+  ansible.builtin.shell: |
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  args:
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+- name: Set up Kubernetes repository
+  become: true
+  shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
+
+
+
