@@ -66,11 +66,24 @@
     enabled: yes
     state: started
 
-- name: Remove containerd config file if exists (to revert containerd config to default)
+- name: Generate default containerd config
   become: true
-  ansible.builtin.file:
+  ansible.builtin.command: containerd config default
+  register: containerd_config
+
+- name: Write containerd config to file
+  become: true
+  ansible.builtin.copy:
+    content: "{{ containerd_config.stdout }}"
+    dest: /etc/containerd/config.toml
+    mode: '0644'
+
+- name: Enable SystemdCgroup in containerd config
+  become: true
+  ansible.builtin.replace:
     path: /etc/containerd/config.toml
-    state: absent
+    regexp: '(\s+SystemdCgroup =) false'
+    replace: '\1 true'
 
 - name: Restart containerd service
   become: true
