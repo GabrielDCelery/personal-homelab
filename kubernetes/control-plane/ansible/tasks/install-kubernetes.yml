@@ -78,6 +78,50 @@
     name: containerd
     state: restarted
 
+- name: Install UFW
+  become: true
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Allow SSH access
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+
+- name: Allow required Kubernetes control plane ports
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - "6443" # Kubernetes API server
+    - "2379" # etcd server client API
+    - "2380" # etcd server client API
+    - "10250" # Kubelet API
+    - "10259" # kube-scheduler
+    - "10257" # kube-controller-manager
+
+- name: Allow required Kubernetes worker node ports
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - "10250" # Kubelet API
+    - "30000:32767" # NodePort Services
+
+- name: Enable UFW
+  become: true
+  ansible.builtin.ufw:
+    state: enabled
+    policy: deny
+    logging: 'on'
+
 - name: Copy kubeadm configuration file
   become: true
   ansible.builtin.copy:
