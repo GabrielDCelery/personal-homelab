@@ -66,3 +66,23 @@
     enabled: yes
     state: started
 
+- name: Copy kubeadm configuration file
+  become: true
+  ansible.builtin.copy:
+    src: remote-configs/kubeadm-config.yaml
+    dest: /root/kubeadm-config.yaml
+    mode: '0644'
+
+- name: Initialize Kubernetes cluster using configuration file
+  become: true
+  ansible.builtin.command: kubeadm init --config /root/kubeadm-config.yaml
+  register: kubeadm_init
+  # Only run if the cluster hasn't been initialized yet
+  args:
+    creates: /etc/kubernetes/admin.conf
+
+- name: Display kubeadm init output
+  debug:
+    var: kubeadm_init.stdout_lines
+  when: kubeadm_init.changed
+
