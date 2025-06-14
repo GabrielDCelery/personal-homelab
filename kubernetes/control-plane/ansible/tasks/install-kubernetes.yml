@@ -66,6 +66,18 @@
     enabled: yes
     state: started
 
+- name: Remove containerd config file if exists (to revert containerd config to default)
+  become: true
+  ansible.builtin.file:
+    path: /etc/containerd/config.toml
+    state: absent
+
+- name: Restart containerd service
+  become: true
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+
 - name: Copy kubeadm configuration file
   become: true
   ansible.builtin.copy:
