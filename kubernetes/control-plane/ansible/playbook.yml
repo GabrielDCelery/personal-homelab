@@ -1,13 +1,22 @@
-- name: Install kubernetes
-  hosts: control_plane
+- name: Setup NUC
+  hosts: nuc_host
   gather_facts: true
   tasks:
-    - name: Import Docker installation tasks
-      ansible.builtin.import_tasks: tasks/install-docker.yml
+    - name: Inatall virtualbox
+      ansible.builtin.import_tasks: tasks/install-virtualbox.yaml
       tags:
-        - docker
+        - virtualbox
 
-    - name: Import Kubernetes installation tasks
-      ansible.builtin.import_tasks: tasks/install-kubernetes.yml
-      tags:
-        - kubernetes
+# - name: Install kubernetes
+#   hosts: control_plane
+#   gather_facts: true
+#   tasks:
+#     - name: Import Docker installation tasks
+#       ansible.builtin.import_tasks: tasks/install-docker.yml
+#       tags:
+#         - docker
+#
+#     - name: Import Kubernetes installation tasks
+#       ansible.builtin.import_tasks: tasks/install-kubernetes.yml
+#       tags:
+#         - kubernetes
