@@ -32,7 +32,7 @@
         - not (virtualbox_ubuntu_vm_name in existing_vms.stdout)
 
 - name: configure VM settings
-  win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" modifyvm "{{ virtualbox_ubuntu_vm_name }}" --memory 4096 --cpus 2 --acpi on --boot1 dvd --nic1 bridged --bridgeadapter1 "Default Switch"'
+  win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" modifyvm "{{ virtualbox_ubuntu_vm_name }}" --memory 4096 --cpus 2 --acpi on --boot1 dvd --nic1 bridged --bridgeadapter1 "Realtek PCIe GbE Family Controller #2"'
 
 - name: Check if VM has storage controller
   win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" showvminfo "{{ virtualbox_ubuntu_vm_name }}" --machinereadable'
