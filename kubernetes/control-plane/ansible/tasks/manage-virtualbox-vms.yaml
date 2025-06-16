@@ -1,59 +1,55 @@
-- name: download ubuntu server ISO if not exists
+- name: Download and prepare cloud image
   block:
-    - name: check if ISO exits
+    - name: Check if cloud image exists
       win_stat:
-        path: C:\Users\{{ ansible_user }}\Downloads\ubuntu-24.04.2-live-server-amd64.iso
-      register: ubuntu_iso
+        path: C:\Users\{{ ansible_user }}\Downloads\ubuntu-22.04-server-cloudimg-amd64.vmdk
+      register: cloud_image
       changed_when: false
 
-    - name: download ISO if not exists
+    - name: Download cloud image if not exists
       win_get_url:
-        url: https://releases.ubuntu.com/24.04.2/ubuntu-24.04.2-live-server-amd64.iso
-        dest: C:\Users\{{ ansible_user }}\Downloads\ubuntu-24.04.2-live-server-amd64.iso
-      # only run if at the previous step we detected that the file does not exits
-      when: not ubuntu_iso.stat.exists
+        url: https://cloud-images.ubuntu.com/releases/jammy/release-20250516/ubuntu-22.04-server-cloudimg-amd64.vmdk
+        dest: C:\Users\{{ ansible_user }}\Downloads\ubuntu-22.04-server-cloudimg-amd64.vmdk
+      when: not cloud_image.stat.exists
 
+    - name: Copy cloud-init config to Windows
+      win_copy:
+        src: ../files/cloud-init.iso
+        dest: C:\Users\{{ ansible_user }}\Downloads\cloud-init.iso
 
-- name: create VM
+- name: Create and configure VM
   block:
-    - name: check if VM already exits
+    - name: Check if VM already exists
       win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" list vms'
       register: existing_vms
       changed_when: false
 
-    - name: create VM if not exists
+    - name: Create VM if not exists
       win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" createvm --name "{{ virtualbox_ubuntu_vm_name }}" --ostype "Ubuntu_64" --register'
-      register: create_vm_result
-      # only run if
-      # - the ISO file exists (checked in the previous step)
-      # - the VM does not already exist
-      when:
-        - ubuntu_iso.stat.exists
-        - not (virtualbox_ubuntu_vm_name in existing_vms.stdout)
+      when: not (virtualbox_ubuntu_vm_name in existing_vms.stdout)
 
-- name: configure VM settings
-  win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" modifyvm "{{ virtualbox_ubuntu_vm_name }}" --memory 4096 --cpus 2 --acpi on --boot1 dvd --nic1 bridged --bridgeadapter1 "Realtek PCIe GbE Family Controller #2"'
+    - name: Configure VM settings
+      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" modifyvm "{{ virtualbox_ubuntu_vm_name }}" --memory 4096 --cpus 2 --acpi on --nic1 bridged --bridgeadapter1 "Realtek PCIe GbE Family Controller #2"'
 
-- name: Check if VM has storage controller
-  win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" showvminfo "{{ virtualbox_ubuntu_vm_name }}" --machinereadable'
-  register: vm_info
-  changed_when: false
+    - name: Check if VM has storage controller
+      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" showvminfo "{{ virtualbox_ubuntu_vm_name }}" --machinereadable'
+      register: vm_info
+      changed_when: false
 
-- name: Create and attach virtual hard disk
-  block:
-    - name: Create virtual hard disk
-      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" createhd --filename "C:\Users\{{ ansible_user }}\VirtualBox VMs\{{ virtualbox_ubuntu_vm_name }}\{{ virtualbox_ubuntu_vm_name }}.vdi" --size 50000'
+    - name: Add storage controllers
+      block:
+        - name: Add SATA controller
+          win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storagectl "{{ virtualbox_ubuntu_vm_name }}" --name "SATA Controller" --add sata --controller IntelAHCI'
 
-    - name: Add SATA storage controller
-      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storagectl "{{ virtualbox_ubuntu_vm_name }}" --name "SATA Controller" --add sata --controller IntelAHCI'
+        - name: Add IDE controller for cloud-init
+          win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storagectl "{{ virtualbox_ubuntu_vm_name }}" --name "IDE Controller" --add ide'
+      when: '"SATA Controller" not in vm_info.stdout'
 
-    - name: Attach virtual hard disk
-      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storageattach "{{ virtualbox_ubuntu_vm_name }}" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "C:\Users\{{ ansible_user }}\VirtualBox VMs\{{ virtualbox_ubuntu_vm_name }}\{{ virtualbox_ubuntu_vm_name }}.vdi"'
-  when: '"SATA Controller" not in vm_info.stdout'
+    - name: Attach cloud image as main disk
+      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storageattach "{{ virtualbox_ubuntu_vm_name }}" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "C:\Users\{{ ansible_user }}\Downloads\ubuntu-22.04-server-cloudimg-amd64.vmdk"'
 
-- name: attach ISO to VM
-  win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storageattach "{{ virtualbox_ubuntu_vm_name }}" --storagectl "SATA Controller" --port 1 --device 0 --type dvddrive --medium "C:\Users\{{ ansible_user }}\Downloads\ubuntu-24.04.2-live-server-amd64.iso"'
-  when: ubuntu_iso.stat.exists
+    - name: Attach cloud-init ISO
+      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storageattach "{{ virtualbox_ubuntu_vm_name }}" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "C:\Users\{{ ansible_user }}\Downloads\cloud-init.iso"'
 
-- name: start VM
+- name: Start VM
   win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" startvm "{{ virtualbox_ubuntu_vm_name }}" --type headless'
