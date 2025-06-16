@@ -21,7 +21,7 @@ username ALL=(ALL) NOPASSWD: ALL
 Get-Service WinRM
 Start-Service WinRM
 
-Set-Service WinRM -StartupType Automatic
+Set-Service -Name WinRM -StartupType Automatic
 
 winrm quickconfig
 

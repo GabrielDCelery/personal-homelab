@@ -1,5 +1,6 @@
-- name: Install 7zip using Chocolatey
+- name: Install VirtualBox using Chocolatey
   win_chocolatey:
-    name: 7zip
+    name: virtualbox
+    version: '7.1.8'
     state: present
 

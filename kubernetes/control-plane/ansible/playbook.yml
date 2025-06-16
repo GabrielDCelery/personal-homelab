@@ -2,10 +2,16 @@
   hosts: nuc_host
   gather_facts: true
   tasks:
-    - name: Inatall virtualbox
-      ansible.builtin.import_tasks: tasks/install-virtualbox.yaml
+    # - name: Inatall virtualbox
+    #   ansible.builtin.import_tasks: tasks/install-virtualbox.yaml
+    #   tags:
+    #     - virtualbox
+
+    - name: Setup Ubuntu Server VM
+      ansible.builtin.import_tasks: tasks/manage-virtualbox-vms.yaml
       tags:
         - virtualbox
+        - ubuntu-server
 
 # - name: Install kubernetes
 #   hosts: control_plane

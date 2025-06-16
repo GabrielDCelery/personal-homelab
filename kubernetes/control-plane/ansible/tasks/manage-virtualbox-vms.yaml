@@ -1,0 +1,59 @@
+- name: download ubuntu server ISO if not exists
+  block:
+    - name: check if ISO exits
+      win_stat:
+        path: C:\Users\{{ ansible_user }}\Downloads\ubuntu-24.04.2-live-server-amd64.iso
+      register: ubuntu_iso
+      changed_when: false
+
+    - name: download ISO if not exists
+      win_get_url:
+        url: https://releases.ubuntu.com/24.04.2/ubuntu-24.04.2-live-server-amd64.iso
+        dest: C:\Users\{{ ansible_user }}\Downloads\ubuntu-24.04.2-live-server-amd64.iso
+      # only run if at the previous step we detected that the file does not exits
+      when: not ubuntu_iso.stat.exists
+
+
+- name: create VM
+  block:
+    - name: check if VM already exits
+      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" list vms'
+      register: existing_vms
+      changed_when: false
+
+    - name: create VM if not exists
+      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" createvm --name "{{ virtualbox_ubuntu_vm_name }}" --ostype "Ubuntu_64" --register'
+      register: create_vm_result
+      # only run if
+      # - the ISO file exists (checked in the previous step)
+      # - the VM does not already exist
+      when:
+        - ubuntu_iso.stat.exists
+        - not (virtualbox_ubuntu_vm_name in existing_vms.stdout)
+
+- name: configure VM settings
+  win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" modifyvm "{{ virtualbox_ubuntu_vm_name }}" --memory 4096 --cpus 2 --acpi on --boot1 dvd --nic1 bridged --bridgeadapter1 "Default Switch"'
+
+- name: Check if VM has storage controller
+  win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" showvminfo "{{ virtualbox_ubuntu_vm_name }}" --machinereadable'
+  register: vm_info
+  changed_when: false
+
+- name: Create and attach virtual hard disk
+  block:
+    - name: Create virtual hard disk
+      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" createhd --filename "C:\Users\{{ ansible_user }}\VirtualBox VMs\{{ virtualbox_ubuntu_vm_name }}\{{ virtualbox_ubuntu_vm_name }}.vdi" --size 50000'
+
+    - name: Add SATA storage controller
+      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storagectl "{{ virtualbox_ubuntu_vm_name }}" --name "SATA Controller" --add sata --controller IntelAHCI'
+
+    - name: Attach virtual hard disk
+      win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storageattach "{{ virtualbox_ubuntu_vm_name }}" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "C:\Users\{{ ansible_user }}\VirtualBox VMs\{{ virtualbox_ubuntu_vm_name }}\{{ virtualbox_ubuntu_vm_name }}.vdi"'
+  when: '"SATA Controller" not in vm_info.stdout'
+
+- name: attach ISO to VM
+  win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" storageattach "{{ virtualbox_ubuntu_vm_name }}" --storagectl "SATA Controller" --port 1 --device 0 --type dvddrive --medium "C:\Users\{{ ansible_user }}\Downloads\ubuntu-24.04.2-live-server-amd64.iso"'
+  when: ubuntu_iso.stat.exists
+
+- name: start VM
+  win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" startvm "{{ virtualbox_ubuntu_vm_name }}" --type headless'
