@@ -7,10 +7,10 @@
       tags:
         - virtualbox
 
-    - name: setup kubernetes control plane
-      ansible.builtin.import_tasks: tasks/manage-virtualbox-vms.yaml
-      tags:
-        - k8s-cp-vm
+  # - name: setup kubernetes control plane
+  #   ansible.builtin.import_tasks: tasks/manage-virtualbox-vms.yaml
+  #   tags:
+  #     - k8s-cp-vm
 
   # - name: Get VM IP address
   #   win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" guestproperty get "{{ virtualbox_ubuntu_vm_name }}" "/VirtualBox/GuestInfo/Net/0/V4/IP"'

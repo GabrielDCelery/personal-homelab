@@ -4,3 +4,13 @@
     version: '7.1.8'
     state: present
 
+- name: Install Docker Desktop using Chocolatey
+  win_chocolatey:
+    name: docker-desktop
+    state: present
+
+- name: Install Rancher Desktop using Chocolatey
+  win_chocolatey:
+    name: rancher-desktop
+    state: present
+
