@@ -12,6 +12,21 @@
       tags:
         - k8s-cp-vm
 
+  # - name: Get VM IP address
+  #   win_command: '"C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" guestproperty get "{{ virtualbox_ubuntu_vm_name }}" "/VirtualBox/GuestInfo/Net/0/V4/IP"'
+  #   register: vm_ip
+  #   until: "vm_ip.stdout is regex('Value: .*')"
+  #   retries: 30
+  #   delay: 10
+  #   tags:
+  #     - k8s-ip
+  #
+  # - name: Display VM IP address
+  #   ansible.builtin.debug:
+  #     msg: "VM IP address: {{ vm_ip.stdout | regex_replace('Value: (.*)$', '\\1') }}"
+  #   tags:
+  #     - k8s-ip
+
 # - name: Install kubernetes
 #   hosts: control_plane
 #   gather_facts: true
