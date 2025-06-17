@@ -15,6 +15,10 @@ sudo visudo -f /etc/sudoers.d/username
 username ALL=(ALL) NOPASSWD: ALL
 ```
 
+```sh
+cloud-localds cloud-init.iso user-data.yaml meta-data.yaml
+```
+
 ## Open windows port using Windows Firewall with Advanced Security GUI
 
 ```sh
