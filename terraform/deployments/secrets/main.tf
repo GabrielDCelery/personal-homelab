@@ -43,9 +43,14 @@ resource "azurerm_key_vault_access_policy" "secrets" {
   ]
 }
 
-resource "azurerm_key_vault_secret" "secrets" {
+resource "azurerm_key_vault_secret" "secrets_cloudflare_api_token" {
   name         = "gazelab-cloudflare-api-token"
   value        = var.cloudflare_api_token
   key_vault_id = azurerm_key_vault.secrets.id
+}
 
+resource "azurerm_key_vault_secret" "secrets_cloudflare_zone_id" {
+  name         = "gazelab-cloudflare-zone-id"
+  value        = var.cloudflare_zone_id
+  key_vault_id = azurerm_key_vault.secrets.id
 }

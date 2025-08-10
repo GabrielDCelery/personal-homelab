@@ -13,3 +13,9 @@ variable "cloudflare_api_token" {
   type        = string
   sensitive   = true
 }
+
+variable "cloudflare_zone_id" {
+  description = "The zone id for the homelab domain"
+  type        = string
+  sensitive   = true
+}
