@@ -15,10 +15,10 @@ terraform {
     # }
   }
   backend "azurerm" {
-    resource_group_name  = "tfremstatehomelabgaze"
-    storage_account_name = "tfremstatehomelabgaze"
-    container_name       = "tfremstatehomelabgaze"
-    key                  = "terraform.global.tfstate"
+    resource_group_name  = "rg-gazelab-glob-tfstate"
+    storage_account_name = "stgazelabglobtfstate"
+    container_name       = "gazelab-glob-tfstate"
+    key                  = "common.tfstate"
   }
 }
 

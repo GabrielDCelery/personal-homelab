@@ -10,7 +10,7 @@ terraform {
     resource_group_name  = "rg-gazelab-glob-tfstate"
     storage_account_name = "stgazelabglobtfstate"
     container_name       = "gazelab-glob-tfstate"
-    key                  = "bootstrap.tfstate"
+    key                  = "secrets.tfstate"
   }
 }
 

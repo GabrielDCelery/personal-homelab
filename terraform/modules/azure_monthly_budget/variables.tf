@@ -3,6 +3,11 @@ variable "azure_subscription_id" {
   type        = string
 }
 
+variable "monthly_budget_name" {
+  description = "Name of the monthly budget"
+  type        = string
+}
+
 variable "monthly_budget_amount" {
   description = "Monthly budget amount"
   type        = number

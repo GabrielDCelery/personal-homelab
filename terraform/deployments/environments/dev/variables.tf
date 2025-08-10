@@ -1,7 +1,7 @@
-variable "username" {
-  description = "Username all lower characters"
-  type        = string
-}
+# variable "username" {
+#   description = "Username all lower characters"
+#   type        = string
+# }
 
 variable "environment" {
   description = "The deployment environment"
