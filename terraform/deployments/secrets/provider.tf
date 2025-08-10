@@ -16,5 +16,10 @@ terraform {
 
 provider "azurerm" {
   subscription_id = var.azure_homelab_subscription_id
-  features {}
+  features {
+    key_vault {
+      purge_soft_deleted_secrets_on_destroy = true
+      recover_soft_deleted_secrets          = true
+    }
+  }
 }

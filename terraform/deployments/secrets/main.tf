@@ -23,13 +23,18 @@ resource "azurerm_key_vault_access_policy" "secrets" {
   object_id    = data.azurerm_client_config.current.object_id
 
   key_permissions = [
+    "Create",
     "Get",
     "List"
   ]
 
   secret_permissions = [
+    "Delete",
     "Get",
-    "List"
+    "List",
+    "Purge",
+    "Recover",
+    "Set",
   ]
 
   storage_permissions = [
@@ -38,5 +43,9 @@ resource "azurerm_key_vault_access_policy" "secrets" {
   ]
 }
 
+resource "azurerm_key_vault_secret" "secrets" {
+  name         = "gazelab-cloudflare-api-token"
+  value        = var.cloudflare_api_token
+  key_vault_id = azurerm_key_vault.secrets.id
 
-
+}
