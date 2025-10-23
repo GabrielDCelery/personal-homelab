@@ -4,4 +4,5 @@
 *.tfstate.backup
 *.tfvars
 *.tfstate.lock.info
+*.tfplan
 tfplan
