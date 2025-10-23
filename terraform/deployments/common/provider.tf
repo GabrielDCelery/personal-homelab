@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">=1.0.0"
+  required_version = "~> 1.13"
   required_providers {
     # cloudflare = {
     #   source  = "cloudflare/cloudflare"
@@ -7,7 +7,7 @@ terraform {
     # }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0.0"
+      version = "~> 4.49"
     }
     # azuread = {
     #   source  = "hashicorp/azuread"
