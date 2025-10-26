@@ -1,3 +1,0 @@
-# Default variable values for VirtualBox VM management
-virtualbox_ubuntu_vm_name: "k8s_control_node"
-

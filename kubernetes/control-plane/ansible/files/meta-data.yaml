@@ -1,5 +1,0 @@
-# this is used by cloud init to determine if it has been running on the instance or not
-# prevents duplicate initialization
-instance-id: k8s-cp
-# the hostname of the machine
-local-hostname: k8s-cp
