@@ -1,0 +1,4 @@
+homelab:
+  hosts:
+    do_dev:
+      ansible_host: 157.245.73.142
