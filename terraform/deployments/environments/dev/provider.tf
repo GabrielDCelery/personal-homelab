@@ -1,40 +1,40 @@
 terraform {
-  required_version = ">=1.0.0"
+  required_version = "~> 1.13"
   required_providers {
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 5.0.0"
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.1"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0.0"
+      version = "~> 4.49"
     }
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "~> 3.0.0"
-    }
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.68"
     }
   }
   backend "azurerm" {
-    resource_group_name  = "tfremstatehomelabgaze"
-    storage_account_name = "tfremstatehomelabgaze"
-    container_name       = "tfremstatehomelabgaze"
+    resource_group_name  = "rg-gazelab-glob-tfstate"
+    storage_account_name = "stgazelabglobtfstate"
+    container_name       = "gazelab-glob-tfstate"
     key                  = "terraform.dev.tfstate"
   }
 }
 
-provider "cloudflare" {
-  api_token = sensitive(var.cloudflare_api_token)
-}
-
+# provider "cloudflare" {
+#   api_token = sensitive(var.cloudflare_api_token)
+# }
+#
 provider "azurerm" {
   subscription_id = var.azure_homelab_subscription_id
   features {}
 }
+#
+# provider "aws" {
+#   region = var.aws_region
+# }
 
-provider "aws" {
-  region = var.aws_region
+provider "digitalocean" {
+  token = var.digitalocean_token
 }
