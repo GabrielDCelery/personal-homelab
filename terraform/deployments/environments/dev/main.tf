@@ -25,6 +25,7 @@ resource "azurerm_key_vault" "homelab" {
   soft_delete_retention_days    = 90
   purge_protection_enabled      = false
   public_network_access_enabled = true
+  depends_on                    = [azurerm_resource_group.homelab]
 }
 
 resource "azurerm_key_vault_access_policy" "homelab" {
@@ -49,7 +50,10 @@ resource "azurerm_key_vault_access_policy" "homelab" {
 
   storage_permissions = [
     "Get",
-    "List"
+    "List",
+    "Delete",
+    "Purge",
+    "Recover"
   ]
 }
 
@@ -70,6 +74,7 @@ resource "azurerm_key_vault_secret" "homelab_digitalocean_server_private_key" {
   name             = "gazelab-digitalocean-private-key"
   value_wo         = ephemeral.tls_private_key.homelab_digitalocean_server.private_key_openssh
   value_wo_version = local.homelab_digitalocean_server_ssh_key_version
+  depends_on       = [azurerm_key_vault.homelab, azurerm_key_vault_access_policy.homelab]
 }
 
 resource "azurerm_key_vault_secret" "homelab_digitalocean_server_public_key" {
@@ -77,6 +82,7 @@ resource "azurerm_key_vault_secret" "homelab_digitalocean_server_public_key" {
   name             = "gazelab-digitalocean-public-key"
   value_wo         = ephemeral.tls_private_key.homelab_digitalocean_server.public_key_openssh
   value_wo_version = local.homelab_digitalocean_server_ssh_key_version
+  depends_on       = [azurerm_key_vault.homelab, azurerm_key_vault_access_policy.homelab]
 }
 
 data "azurerm_key_vault_secret" "homelab_digitalocean_server_public_key" {
@@ -90,6 +96,21 @@ resource "digitalocean_ssh_key" "homelab_digitalocean_server_public_key" {
   public_key = data.azurerm_key_vault_secret.homelab_digitalocean_server_public_key.value
 }
 
+locals {
+  digitalocean_droplet_environments = {
+    dev  = "Development"
+    prod = "Production"
+  }
+}
+
+
+resource "digitalocean_project" "homelab" {
+  name        = "homelab-${var.environment}"
+  description = "Development homelab environment"
+  environment = local.digitalocean_droplet_environments[var.environment]
+  resources   = [digitalocean_droplet.homelab.urn]
+}
+
 resource "digitalocean_droplet" "homelab" {
   image    = "ubuntu-24-04-x64"
   name     = "homelab"
@@ -99,9 +120,7 @@ resource "digitalocean_droplet" "homelab" {
   ssh_keys = [digitalocean_ssh_key.homelab_digitalocean_server_public_key.fingerprint]
 }
 
-resource "digitalocean_project" "homelab" {
-  name        = "homelab-dev"
-  description = "Development homelab environment"
-  environment = "Development"
-  resources   = [digitalocean_droplet.homelab.urn]
+output "homelab_do_ipv4" {
+  value = digitalocean_droplet.homelab.ipv4_address
 }
+
