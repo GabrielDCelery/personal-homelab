@@ -15,3 +15,6 @@ run = 'terraform output -json | jq'
 
 [tasks.get_do_homelab_pk]
 run = "az keyvault secret show --vault-name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.vault_name') --name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.secret_name') --query value -o tsv"
+
+[tasks.get_do_homelab_ansible_inventory]
+run = 'terraform output -raw ansible_inventory '

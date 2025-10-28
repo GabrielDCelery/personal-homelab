@@ -23,6 +23,7 @@ run = ['mise tasks run //ansible:check']
 [tasks.deploy_dev]
 run = [
     'mise tasks run //terraform/deployments/environments/dev:apply',
+    'mise tasks run //terraform/deployments/environments/dev:get_do_homelab_ansible_inventory > ./ansible/inventory.yaml',
     'mise tasks run //terraform/deployments/environments/dev:get_do_homelab_pk > ~/.ssh/{{vars.do_homelab_pk_ssh_key_name}}',
     'mise tasks run //ansible:deploy_dev',
 ]

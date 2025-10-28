@@ -130,3 +130,15 @@ output "homelab_do_server_private_key" {
     secret_name = azurerm_key_vault_secret.homelab_digitalocean_server_private_key.name
   }
 }
+
+output "ansible_inventory" {
+  value = yamlencode({
+    homelab = {
+      hosts = {
+        do_dev = {
+          ansible_host = digitalocean_droplet.homelab.ipv4_address
+        }
+      }
+    }
+  })
+}
