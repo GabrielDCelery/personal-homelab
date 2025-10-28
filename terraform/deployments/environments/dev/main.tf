@@ -1,4 +1,4 @@
-# module "blog" {
+#} module "blog" {
 #   source                         = "../../../../blog/infrastructure"
 #   domain_name                    = var.domain_name
 #   aws_account_id                 = var.aws_account_id
@@ -126,8 +126,7 @@ output "homelab_do_ipv4" {
 
 output "homelab_do_server_private_key" {
   value = {
-    vault_name     = azurerm_key_vault.homelab.name
-    name           = azurerm_key_vault_secret.homelab_digitalocean_server_private_key.name
-    export_command = "az keyvault secret show --vault-name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.vault_name') --name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.name') --query value -o tsv"
+    vault_name  = azurerm_key_vault.homelab.name
+    secret_name = azurerm_key_vault_secret.homelab_digitalocean_server_private_key.name
   }
 }

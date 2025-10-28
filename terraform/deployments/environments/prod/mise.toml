@@ -1,0 +1,11 @@
+[tasks.init]
+run = 'terraform init'
+
+[tasks.plan]
+run = 'terraform plan'
+
+[tasks.apply]
+run = 'terraform apply'
+
+[tasks.destroy]
+run = 'terraform destroy'

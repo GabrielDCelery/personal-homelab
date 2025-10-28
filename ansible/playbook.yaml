@@ -79,3 +79,7 @@
         detach: false
         auto_remove: true
 
+    # docker network create homelab
+    - name: Create a docker network for the homelab
+      community.docker.docker_network:
+        name: homelab

@@ -1,0 +1,8 @@
+services:
+  hello_world:
+    image: hello-world
+    networks:
+      - homelab
+networks:
+  homelab:
+    external: true

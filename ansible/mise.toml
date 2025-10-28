@@ -1,4 +1,11 @@
 [tools]
 ansible = "12.1.0"
-azure-cli = "2.78.0"
 pipx = "1.8.0"
+
+[tasks.check]
+description = "Check Ansible playbook syntax"
+run = "ansible-playbook --syntax-check playbook.yaml"
+
+[tasks.deploy_dev]
+description = "Deploy development environment"
+run = 'ansible-playbook -i inventory.yaml playbook.yaml'
