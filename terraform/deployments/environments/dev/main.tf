@@ -120,3 +120,16 @@ resource "digitalocean_droplet" "homelab" {
   ssh_keys = [digitalocean_ssh_key.homelab_digitalocean_server_public_key.fingerprint]
 }
 
+resource "terraform_data" "homelab" {
+  depends_on = [digitalocean_droplet.homelab]
+
+  provisioner "local-exec" {
+    command = <<EOT
+        until nc -zv ${digitalocean_droplet.homelab.ipv4_address} 22; do
+          echo "Waiting for SSH..."
+          sleep 5
+        done
+    EOT
+  }
+}
+
