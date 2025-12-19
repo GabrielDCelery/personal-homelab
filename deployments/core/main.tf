@@ -1,5 +1,5 @@
 module "azure_budget" {
-  source                = "../../modules/azure_monthly_budget"
+  source                = "./modules/azure_monthly_budget"
   notification_emails   = var.azure_budget_notification_emails
   monthly_budget_name   = "budgs-gazelab-glob-monthly-budget"
   monthly_budget_amount = var.azure_monthly_budget_amount

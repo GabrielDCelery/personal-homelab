@@ -1,0 +1,65 @@
+[tools]
+ansible = "12.1.0"
+azure-cli = "2.81.0"
+pipx = "1.8.0"
+python = "3.11"
+terraform = "1.13"
+
+[tasks."tf:init"]
+description = "Initialize terraform"
+run = "terraform init"
+dir = "./terraform"
+
+[tasks."tf:workspace"]
+description = "Creates or switches to workspace"
+run = "terraform workspace select $ENVIRONMENT || terraform workspace new $ENVIRONMENT"
+
+[tasks."tf:plan"]
+description = "Run terraform plan for"
+run = "terraform plan -var-file=environments/${ENVIRONMENT}.tfvars"
+dir = "./terraform"
+depends = ["tf:workspace"]
+
+[tasks."tf:apply"]
+description = "Run terraform apply for"
+run = "terraform apply -var-file=environments/${ENVIRONMENT}.tfvars"
+dir = "./terraform"
+depends = ["tf:workspace"]
+
+[tasks."tf:outputs"]
+description = "Run terraform output for"
+run = "terraform output -json > ../inventory/${ENVIRONMENT}_outputs.json"
+dir = "./terraform"
+depends = ["tf:workspace"]
+
+# [tasks."inventory:generate"]
+# run = "./scripts/generate_inventory.sh ${ENVIRONMENT}"
+
+[tasks."ansible:inventory"]
+description = "Generate inventory for terraform"
+run = "terraform output -raw ansible_inventory > ../ansible/inventory.yaml"
+dir = "./terraform"
+
+# [tasks."ansible:run"]
+# run = "ansible-playbook -i inventory/${ENVIRONMENT}.ini playbooks/site.yml -e env=${ENVIRONMENT}"
+
+[tasks."ansible:ssh"]
+description = "Get the private SHH key for the homelab server"
+run = """
+az keyvault secret show \
+--vault-name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.vault_name') \
+--name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.secret_name') \
+--query value -o tsv > ~/.ssh/do_homelab
+chmod 600 ~/.ssh/do_homelab
+"""
+dir = "./terraform/"
+
+[tasks."ansible:deploy"]
+description = "Run ansible playbook against"
+run = "ansible-playbook -i inventory.yaml playbook.yaml"
+dir = "./ansible"
+
+[tasks.destroy]
+description = "Destroys the homelab"
+run = "terraform apply -destroy -auto-approve"
+dir = "./terraform"
