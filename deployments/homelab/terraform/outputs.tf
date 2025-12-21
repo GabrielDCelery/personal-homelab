@@ -20,3 +20,8 @@ output "ansible_inventory" {
     }
   })
 }
+
+output "cloudflare_tunnel_token" {
+  value     = data.cloudflare_zero_trust_tunnel_cloudflared_token.tunnel.token
+  sensitive = true
+}

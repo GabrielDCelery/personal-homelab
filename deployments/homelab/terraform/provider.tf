@@ -13,6 +13,10 @@ terraform {
       source  = "digitalocean/digitalocean"
       version = "~> 2.68"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5"
+    }
   }
   backend "azurerm" {
     resource_group_name  = "rg-gazelab-glob-tfstate"
@@ -22,10 +26,10 @@ terraform {
   }
 }
 
-# provider "cloudflare" {
-#   api_token = sensitive(var.cloudflare_api_token)
-# }
-#
+provider "cloudflare" {
+  api_token = sensitive(var.cloudflare_api_token)
+}
+
 provider "azurerm" {
   subscription_id = var.azure_homelab_subscription_id
   features {}

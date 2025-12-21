@@ -1,13 +1,14 @@
 [tools]
 ansible = "12.1.0"
 azure-cli = "2.81.0"
+jq = "1.8.1"
 pipx = "1.8.0"
 python = "3.11"
 terraform = "1.13"
 
 [tasks."tf:init"]
 description = "Initialize terraform"
-run = "terraform init"
+run = ["terraform init"]
 dir = "./terraform"
 
 [tasks."tf:workspace"]
@@ -35,9 +36,12 @@ depends = ["tf:workspace"]
 # [tasks."inventory:generate"]
 # run = "./scripts/generate_inventory.sh ${ENVIRONMENT}"
 
-[tasks."ansible:inventory"]
-description = "Generate inventory for terraform"
-run = "terraform output -raw ansible_inventory > ../ansible/inventory.yaml"
+[tasks."ansible:prepare"]
+description = "Generate inventory and env variables for ansible"
+run = """
+terraform output -raw ansible_inventory > ../ansible/inventory.yaml
+terraform output -raw ansible_extra_vars > ../ansible/extra-vars.yaml
+"""
 dir = "./terraform"
 
 # [tasks."ansible:run"]
@@ -55,8 +59,11 @@ chmod 600 ~/.ssh/do_homelab
 dir = "./terraform/"
 
 [tasks."ansible:deploy"]
-description = "Run ansible playbook against"
-run = "ansible-playbook -i inventory.yaml playbook.yaml"
+description = "Run ansible playbook against homelab server"
+run = """
+export CLOUDFLARE_TUNNEL_TOKEN=$(cd ../terraform && terraform output -raw cloudflare_tunnel_token)
+ansible-playbook -i inventory.yaml playbook.yaml 
+"""
 dir = "./ansible"
 
 [tasks.destroy]

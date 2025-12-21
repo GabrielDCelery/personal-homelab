@@ -30,6 +30,11 @@ variable "cloudflare_account_id" {
   description = "The ID that can be found by visiting the 'Account page' then picking the 'domain' (scroll down and is on the right hand side)"
 }
 
+variable "cloudflare_api_token" {
+  type        = string
+  description = "This is the token that was set up manually via 'Profile' -> 'API tokens'"
+}
+
 # -----------------------------------------------------------------
 # Homelab
 # -----------------------------------------------------------------

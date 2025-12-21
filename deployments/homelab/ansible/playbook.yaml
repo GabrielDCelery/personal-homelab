@@ -3,6 +3,8 @@
 - name: Homelab DigitalOcean server
   hosts: homelab
   become: true
+  vars:
+    cloudflare_tunnel_token: "{{ lookup('env', 'CLOUDFLARE_TUNNEL_TOKEN') }}"
   tasks:
     # sudo apt-get update
     - name: Update apt cache
@@ -83,3 +85,14 @@
     - name: Create a docker network for the homelab
       community.docker.docker_network:
         name: homelab
+
+    - name: Run cloudflare tunnel
+      community.docker.docker_container:
+        name: cloudflared-tunnel
+        image: cloudflare/cloudflared:latest
+        command: "tunnel --no-autoupdate run --token {{ lookup('ansible.builtin.env', 'CLOUDFLARE_TUNNEL_TOKEN') }}"
+        state: started
+        restart_policy: unless-stopped
+        detach: true
+        pull: true
+        network_mode: host
