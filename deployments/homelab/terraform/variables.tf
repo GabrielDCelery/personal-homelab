@@ -1,54 +1,6 @@
-# variable "username" {
-#   description = "Username all lower characters"
-#   type        = string
-# }
-
-#
-# variable "azure_homelab_subscription_id" {
-#   description = "The ID of the homelab subscription"
-#   type        = string
-# }
-#
-# variable "azure_region" {
-#   description = "The Azure region"
-#   type        = string
-# }
-#
-# variable "aws_account_id" {
-#   description = "AWS account ID"
-#   type        = string
-# }
-#
-# variable "aws_region" {
-#   description = "The AWS region"
-#   type        = string
-# }
-#
-# variable "domain_name" {
-#   description = "personal blog domain name"
-#   type        = string
-# }
-#
-# variable "cloudflare_api_token" {
-#   description = "cloudlflare api token"
-#   type        = string
-#   sensitive   = true
-# }
-#
-# variable "cloudflare_zone_id" {
-#   description = "cloudflare zone id"
-#   type        = string
-# }
-#
-# variable "cloudflare_domain_cname_name" {
-#   type        = string
-#   description = "cloudflare domain cname name"
-# }
-#
-variable "digitalocean_token" {
-  type        = string
-  description = "DigitalOcean token"
-}
+# -----------------------------------------------------------------
+# Azure
+# -----------------------------------------------------------------
 
 variable "azure_homelab_subscription_id" {
   description = "The ID of the homelab subscription"
@@ -60,7 +12,29 @@ variable "azure_region" {
   type        = string
 }
 
+# -----------------------------------------------------------------
+# DigitalOcean 
+# -----------------------------------------------------------------
+
+variable "digitalocean_token" {
+  type        = string
+  description = "The personal access token that is generated via the 'API' section"
+}
+
+# -----------------------------------------------------------------
+# Cloudflare
+# -----------------------------------------------------------------
+
+variable "cloudflare_account_id" {
+  type        = string
+  description = "The ID that can be found by visiting the 'Account page' then picking the 'domain' (scroll down and is on the right hand side)"
+}
+
+# -----------------------------------------------------------------
+# Homelab
+# -----------------------------------------------------------------
+
 variable "environment" {
-  description = "The deployment environment"
+  description = "The deployment environment (e.g. dev, prod)"
   type        = string
 }
