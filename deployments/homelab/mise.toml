@@ -14,6 +14,7 @@ dir = "./terraform"
 [tasks."tf:workspace"]
 description = "Creates or switches to workspace"
 run = "terraform workspace select $ENVIRONMENT || terraform workspace new $ENVIRONMENT"
+dir = "./terraform/"
 
 [tasks."tf:plan"]
 description = "Run terraform plan for"
@@ -40,9 +41,10 @@ depends = ["tf:workspace"]
 description = "Generate inventory and env variables for ansible"
 run = """
 terraform output -raw ansible_inventory > ../ansible/inventory.yaml
-terraform output -raw ansible_extra_vars > ../ansible/extra-vars.yaml
+# terraform output -raw ansible_extra_vars > ../ansible/extra-vars.yaml
 """
 dir = "./terraform"
+depends = ["tf:workspace"]
 
 # [tasks."ansible:run"]
 # run = "ansible-playbook -i inventory/${ENVIRONMENT}.ini playbooks/site.yml -e env=${ENVIRONMENT}"
@@ -57,6 +59,7 @@ az keyvault secret show \
 chmod 600 ~/.ssh/do_homelab
 """
 dir = "./terraform/"
+depends = ["tf:workspace"]
 
 [tasks."ansible:deploy"]
 description = "Run ansible playbook against homelab server"
@@ -65,8 +68,15 @@ export CLOUDFLARE_TUNNEL_TOKEN=$(cd ../terraform && terraform output -raw cloudf
 ansible-playbook -i inventory.yaml playbook.yaml 
 """
 dir = "./ansible"
+depends = ["tf:workspace"]
 
 [tasks.destroy]
 description = "Destroys the homelab"
-run = "terraform apply -destroy -auto-approve"
-dir = "./terraform"
+run = """
+cd ansible
+ansible-playbook -i inventory.yaml teardown.yaml
+cd ..
+cd terraform
+terraform apply -destroy -auto-approve
+"""
+depends = ["tf:workspace"]

@@ -1,0 +1,19 @@
+# This is the ansible version of the docker installation provided by their docs
+# https://docs.docker.com/engine/install/ubuntu/
+- name: Homelab DigitalOcean server
+  hosts: homelab
+  become: true
+  vars:
+    cloudflare_tunnel_token: "{{ lookup('env', 'CLOUDFLARE_TUNNEL_TOKEN') }}"
+  tasks:
+    # Stop and remove cloudflared tunnel container
+    - name: Stop and remove cloudflared tunnel container
+      community.docker.docker_container:
+        name: cloudflared-tunnel
+        state: absent
+
+    # Remove the homelab Docker network
+    - name: Remove homelab Docker network
+      community.docker.docker_network:
+        name: homelab
+        state: absent
