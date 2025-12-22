@@ -37,6 +37,18 @@ depends = ["tf:workspace"]
 # [tasks."inventory:generate"]
 # run = "./scripts/generate_inventory.sh ${ENVIRONMENT}"
 
+[tasks."ssh:prepare"]
+description = "Get the private SHH key for the homelab server"
+run = """
+az keyvault secret show \
+--vault-name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.vault_name') \
+--name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.secret_name') \
+--query value -o tsv > ~/.ssh/do_homelab
+chmod 600 ~/.ssh/do_homelab
+"""
+dir = "./terraform/"
+depends = ["tf:workspace"]
+
 [tasks."ansible:prepare"]
 description = "Generate inventory and env variables for ansible"
 run = """
@@ -49,18 +61,6 @@ depends = ["tf:workspace"]
 # [tasks."ansible:run"]
 # run = "ansible-playbook -i inventory/${ENVIRONMENT}.ini playbooks/site.yml -e env=${ENVIRONMENT}"
 
-[tasks."ansible:ssh"]
-description = "Get the private SHH key for the homelab server"
-run = """
-az keyvault secret show \
---vault-name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.vault_name') \
---name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.secret_name') \
---query value -o tsv > ~/.ssh/do_homelab
-chmod 600 ~/.ssh/do_homelab
-"""
-dir = "./terraform/"
-depends = ["tf:workspace"]
-
 [tasks."ansible:deploy"]
 description = "Run ansible playbook against homelab server"
 run = """
@@ -70,11 +70,31 @@ ansible-playbook -i inventory.yaml playbook.yaml
 dir = "./ansible"
 depends = ["tf:workspace"]
 
+[tasks."docker:prepare"]
+run = """
+echo "CLOUDFLARE_TUNNEL_TOKEN=$(cd ./terraform && terraform output -raw cloudflare_tunnel_token)" > ./docker/.env
+SERVER_IP=$(cd ./terraform && terraform output -raw homelab_do_ipv4)
+cd ./docker
+docker context rm homelab-${ENVIRONMENT} 2>/dev/null || true
+docker context create homelab-${ENVIRONMENT} --docker "host=ssh://root@$SERVER_IP"
+"""
+depends = ["tf:workspace"]
+
+[tasks."docker:deploy"]
+run = """
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval $(ssh-agent)
+fi
+ssh-add ~/.ssh/do_homelab
+docker --context homelab-${ENVIRONMENT} compose up -d
+"""
+dir = "./docker"
+
 [tasks.destroy]
 description = "Destroys the homelab"
 run = """
-cd ansible
-ansible-playbook -i inventory.yaml teardown.yaml
+cd docker
+docker --context homelab-${ENVIRONMENT} compose down
 cd ..
 cd terraform
 terraform apply -destroy -auto-approve
