@@ -60,13 +60,14 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "tunnel" {
   }
 }
 
+# This is a reusable component for WARP client checks
+# Zero Trust -> Reusable components -> Posture checks
 resource "cloudflare_zero_trust_device_posture_rule" "warp_required" {
-  account_id  = var.cloudflare_account_id
-  name        = "WARP Required"
-  description = ""
-  type        = "warp"
+  account_id = var.cloudflare_account_id
+  name       = "WARP Required"
+  type       = "warp"
   lifecycle {
-    ignore_changes = [description] # Terraform was constantly trying to update this in place (probably Cloudlflare didn't return this)
+    ignore_changes = [description]
   }
 }
 
@@ -87,7 +88,7 @@ resource "cloudflare_zero_trust_access_policy" "homelab_superadmin" {
 }
 
 resource "cloudflare_zero_trust_access_application" "homelab" {
-  name       = "homelab-server-${var.environment}"
+  name       = "app-homelab-${var.environment}"
   account_id = var.cloudflare_account_id
   type       = "self_hosted"
   destinations = [{
@@ -98,5 +99,15 @@ resource "cloudflare_zero_trust_access_application" "homelab" {
     id         = cloudflare_zero_trust_access_policy.homelab_superadmin.id
     precedence = 1
   }]
+}
+
+resource "cloudflare_zero_trust_device_custom_profile" "superadmin" {
+  name       = "dp-homelab-superadmin-${var.environment}"
+  precedence = 1
+  match      = "identity.email == \"${var.cloudflare_admin_email}\""
+  account_id = var.cloudflare_account_id
+  lifecycle {
+    ignore_changes = [description, include]
+  }
 }
 
