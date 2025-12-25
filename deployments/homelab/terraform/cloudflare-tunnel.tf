@@ -1,47 +1,102 @@
-ephemeral "random_password" "tunnel" {
-  length  = 32
-  special = false
-}
-
-locals {
-  tunnel_secret_version = 1
-}
-
-resource "azurerm_key_vault_secret" "tunnel" {
-  key_vault_id     = azurerm_key_vault.homelab.id
-  name             = "gazelab-cloudflare-tunnel-secret"
-  value_wo         = ephemeral.random_password.tunnel.result
-  value_wo_version = local.tunnel_secret_version
-  depends_on       = [azurerm_key_vault.homelab, azurerm_key_vault_access_policy.homelab]
-}
-
-data "azurerm_key_vault_secret" "tunnel" {
-  key_vault_id = azurerm_key_vault.homelab.id
-  name         = azurerm_key_vault_secret.tunnel.name
-  depends_on   = [azurerm_key_vault_secret.tunnel]
-}
-
+# The tunnel managed by Cloudflare 
+# Zero Trust -> Network -> Connectors
 resource "cloudflare_zero_trust_tunnel_cloudflared" "tunnel" {
-  account_id    = var.cloudflare_account_id
-  name          = "gazelab-${var.environment}"
-  config_src    = "cloudflare"
-  tunnel_secret = data.azurerm_key_vault_secret.tunnel.value
-  depends_on    = [digitalocean_droplet.homelab]
+  account_id = var.cloudflare_account_id
+  name       = "gazelab-${var.environment}"
+  config_src = "cloudflare"
+  depends_on = [digitalocean_droplet.homelab]
 }
 
-# resource "cloudflare_zero_trust_tunnel_cloudflared_config" "tunnel" {
-#   account_id = var.cloudflare_account_id
-#   tunnel_id  = resource.cloudflare_zero_trust_tunnel_cloudflared.tunnel.id
-# }
-
+# The token we need to be able to connect the cloudflared client to the server on Cloudflare
 data "cloudflare_zero_trust_tunnel_cloudflared_token" "tunnel" {
   account_id = var.cloudflare_account_id
   tunnel_id  = resource.cloudflare_zero_trust_tunnel_cloudflared.tunnel.id
 }
 
+# The route to my homelab on DigitalOcean so the tunnel knows how to route the traffic
+# Zero Trust -> Network -> Routes
 resource "cloudflare_zero_trust_tunnel_cloudflared_route" "homelab_server" {
   account_id = var.cloudflare_account_id
-  network    = digitalocean_droplet.homelab.ipv4_address
+  network    = "${digitalocean_droplet.homelab.ipv4_address}/32"
   tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.tunnel.id
-  comment    = "Homelab DigitalOcean Server"
+  comment    = "homelab-server-${var.environment}"
 }
+
+locals {
+  subdomain_map = {
+    dev  = "homelab-dev"
+    prod = "homelab"
+  }
+  subdomain   = local.subdomain_map[var.environment]
+  full_domain = "${local.subdomain}.${var.cloudflare_zone_name}"
+}
+
+# Creates the CNAME record that routes homelab.${var.cloudflare_zone_name} to the tunnel.
+resource "cloudflare_dns_record" "http_app" {
+  zone_id = var.cloudflare_zone_id
+  name    = local.subdomain
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.tunnel.id}.cfargotunnel.com"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = true
+}
+
+
+# Rules on how the tunnel should route the traffic 
+# Zero Trust -> Network -> Connectors -> Right hand size three dots 'Configure' -> Published application routes
+resource "cloudflare_zero_trust_tunnel_cloudflared_config" "tunnel" {
+  account_id = var.cloudflare_account_id
+  tunnel_id  = resource.cloudflare_zero_trust_tunnel_cloudflared.tunnel.id
+  config = {
+    ingress = [
+      {
+        hostname = local.full_domain
+        service  = "http://reverse_proxy:80"
+      },
+      {
+        service = "http_status:404"
+      }
+    ]
+  }
+}
+
+resource "cloudflare_zero_trust_device_posture_rule" "warp_required" {
+  account_id  = var.cloudflare_account_id
+  name        = "WARP Required"
+  description = ""
+  type        = "warp"
+  lifecycle {
+    ignore_changes = [description] # Terraform was constantly trying to update this in place (probably Cloudlflare didn't return this)
+  }
+}
+
+resource "cloudflare_zero_trust_access_policy" "homelab_superadmin" {
+  account_id = var.cloudflare_account_id
+  decision   = "allow"
+  name       = "superadmin"
+  include = [{
+    email = {
+      email = var.cloudflare_admin_email
+    }
+  }]
+  require = [{
+    device_posture = {
+      integration_uid = cloudflare_zero_trust_device_posture_rule.warp_required.id
+    }
+  }]
+}
+
+resource "cloudflare_zero_trust_access_application" "homelab" {
+  name       = "homelab-server-${var.environment}"
+  account_id = var.cloudflare_account_id
+  type       = "self_hosted"
+  destinations = [{
+    type = "public"
+    uri  = local.full_domain
+  }]
+  policies = [{
+    id         = cloudflare_zero_trust_access_policy.homelab_superadmin.id
+    precedence = 1
+  }]
+}
+

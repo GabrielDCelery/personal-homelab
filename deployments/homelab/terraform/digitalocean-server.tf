@@ -67,6 +67,35 @@ resource "digitalocean_droplet" "homelab" {
   ssh_keys = [digitalocean_ssh_key.homelab_digitalocean_server_public_key.fingerprint]
 }
 
+resource "digitalocean_firewall" "homelab" {
+  name = "default"
+
+  droplet_ids = [digitalocean_droplet.homelab.id]
+
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "22"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  outbound_rule {
+    protocol              = "tcp"
+    port_range            = "1-65535"
+    destination_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  outbound_rule {
+    protocol              = "udp"
+    port_range            = "1-65535"
+    destination_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  outbound_rule {
+    protocol              = "icmp"
+    destination_addresses = ["0.0.0.0/0", "::/0"]
+  }
+}
+
 resource "terraform_data" "homelab" {
   depends_on = [digitalocean_droplet.homelab]
 

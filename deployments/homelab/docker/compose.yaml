@@ -1,6 +1,16 @@
 services:
-  app:
+  tunnel:
     image: cloudflare/cloudflared:latest
-    container_name: cloudflared-tunnel
-    network_mode: host
+    container_name: cloudflared_tunnel
     command: "tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}"
+    networks:
+      - tunnel
+
+  reverse_proxy:
+    image: nginx:1.28.0
+    container_name: reverse_proxy
+    networks:
+      - tunnel
+
+networks:
+  tunnel:
