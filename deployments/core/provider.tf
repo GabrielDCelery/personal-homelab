@@ -1,18 +1,18 @@
 terraform {
   required_version = "~> 1.13"
   required_providers {
-    # cloudflare = {
-    #   source  = "cloudflare/cloudflare"
-    #   version = "~> 5.0.0"
-    # }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.49"
+      version = "~> 4"
     }
     # azuread = {
     #   source  = "hashicorp/azuread"
     #   version = "~> 3.0.0"
     # }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5"
+    }
   }
   backend "azurerm" {
     resource_group_name  = "rg-gazelab-glob-tfstate"
@@ -20,6 +20,10 @@ terraform {
     container_name       = "gazelab-glob-tfstate"
     key                  = "common.tfstate"
   }
+}
+
+provider "cloudflare" {
+  api_token = sensitive(var.cloudflare_api_token)
 }
 
 provider "azurerm" {

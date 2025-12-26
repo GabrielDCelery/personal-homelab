@@ -17,3 +17,17 @@ variable "azure_region" {
   description = "The azure region"
   type        = string
 }
+
+variable "cloudflare_account_id" {
+  type        = string
+  description = "The ID that can be found by visiting the 'Account page' then picking the 'domain' (scroll down and is on the right hand side)"
+}
+
+variable "cloudflare_api_token" {
+  type        = string
+  description = "This is the token that was set up manually via 'Profile' -> 'API tokens'"
+}
+
+variable "cloudflare_superadmin_email" {
+  description = "Email of the super admin on Cloudflare"
+}
