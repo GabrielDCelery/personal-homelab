@@ -18,11 +18,6 @@ resource "cloudflare_zero_trust_access_policy" "superadmin_without_warp" {
       email = var.cloudflare_superadmin_email
     }
   }]
-  # require = [{
-  #   device_posture = {
-  #     integration_uid = cloudflare_zero_trust_device_posture_rule.warp_required.id
-  #   }
-  # }]
 }
 
 resource "cloudflare_zero_trust_access_policy" "superadmin_with_warp" {
