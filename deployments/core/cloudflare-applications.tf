@@ -1,41 +1,6 @@
-# This is a reusable component for WARP client checks
-# Zero Trust -> Reusable components -> Posture checks
-resource "cloudflare_zero_trust_device_posture_rule" "warp_required" {
-  account_id = var.cloudflare_account_id
-  name       = "WARP Required"
-  type       = "warp"
-  lifecycle {
-    ignore_changes = [description]
-  }
-}
-
-resource "cloudflare_zero_trust_access_policy" "superadmin_without_warp" {
-  account_id = var.cloudflare_account_id
-  decision   = "allow"
-  name       = "superadmin_without_warp"
-  include = [{
-    email = {
-      email = var.cloudflare_superadmin_email
-    }
-  }]
-}
-
-resource "cloudflare_zero_trust_access_policy" "superadmin_with_warp" {
-  account_id = var.cloudflare_account_id
-  decision   = "allow"
-  name       = "superadmin_with_warp"
-  include = [{
-    email = {
-      email = var.cloudflare_superadmin_email
-    }
-  }]
-  require = [{
-    device_posture = {
-      integration_uid = cloudflare_zero_trust_device_posture_rule.warp_required.id
-    }
-  }]
-}
-
+# --------------------------------------------------------------------------------------------------------------------------
+# Applications
+# --------------------------------------------------------------------------------------------------------------------------
 
 # This creates an app that allows to connect to the team's application dashboard
 # This is NOT shown in the Zero Trust -> Access Control -> Applications section but rather under
@@ -51,7 +16,6 @@ resource "cloudflare_zero_trust_access_application" "app_launcher" {
     precedence = 1
   }]
 }
-
 
 # This creates an app that allows to connect to the team's account using WARP
 # This is NOT shown in the Zero Trust -> Access Control -> Applications section but rather under
