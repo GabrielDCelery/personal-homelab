@@ -111,3 +111,21 @@ resource "cloudflare_zero_trust_device_custom_profile" "superadmin" {
   }
 }
 
+resource "cloudflare_zero_trust_access_application" "app_launcher" {
+  account_id = var.cloudflare_account_id
+  type       = "app_launcher"
+  policies = [{
+    id         = cloudflare_zero_trust_access_policy.homelab_superadmin.id
+    precedence = 1
+  }]
+}
+
+resource "cloudflare_zero_trust_access_application" "warp" {
+  account_id = var.cloudflare_account_id
+  type       = "warp"
+  policies = [{
+    id         = cloudflare_zero_trust_access_policy.homelab_superadmin.id
+    precedence = 1
+  }]
+}
+
