@@ -7,24 +7,15 @@ services:
     networks:
       - tunnel
 
-  # reverse_proxy:
-  #   image: nginx:1.28.0
-  #   container_name: reverse_proxy
-  #   networks:
-  #     - tunnel
-
   reverse_proxy:
     image: traefik:v3.6
     container_name: reverse_proxy
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/homelab/configs/traefik/traefik.yaml:/etc/traefik/traefik.yaml
     restart: unless-stopped
     networks:
       - tunnel

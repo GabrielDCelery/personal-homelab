@@ -81,18 +81,19 @@
         detach: false
         auto_remove: true
 
-  # docker network create homelab
-  # - name: Create a docker network for the homelab
-  #   community.docker.docker_network:
-  #     name: homelab
-  #
-  # - name: Run cloudflare tunnel
-  #   community.docker.docker_container:
-  #     name: cloudflared-tunnel
-  #     image: cloudflare/cloudflared:latest
-  #     command: "tunnel --no-autoupdate run --token {{ lookup('ansible.builtin.env', 'CLOUDFLARE_TUNNEL_TOKEN') }}"
-  #     state: started
-  #     restart_policy: unless-stopped
-  #     detach: true
-  #     pull: true
-  #     network_mode: host
+    - name: Create config dir on remote machine for storing config files
+      ansible.builtin.file:
+        path: /opt/homelab/configs
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+
+    - name: Copy config files to remote machine
+      ansible.builtin.copy:
+        src: ../docker/configs/
+        dest: /opt/homelab/configs
+        owner: root
+        group: root
+        mode: '0644'
