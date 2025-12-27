@@ -1,16 +1,35 @@
 services:
   tunnel:
-    image: cloudflare/cloudflared:latest
+    image: cloudflare/cloudflared:2025.11.1
     container_name: cloudflared_tunnel
     command: "tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}"
+    restart: unless-stopped
     networks:
       - tunnel
 
+  # reverse_proxy:
+  #   image: nginx:1.28.0
+  #   container_name: reverse_proxy
+  #   networks:
+  #     - tunnel
+
   reverse_proxy:
-    image: nginx:1.28.0
+    image: traefik:v3.6
     container_name: reverse_proxy
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
     networks:
       - tunnel
+      - reverse_proxy
 
 networks:
   tunnel:
+  reverse_proxy:

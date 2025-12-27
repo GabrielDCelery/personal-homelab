@@ -49,7 +49,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "tunnel" {
     ingress = [
       {
         hostname = local.full_domain
-        service  = "http://reverse_proxy:80"
+        service  = "http://reverse_proxy:8080"
       },
       {
         service = "http_status:404"
