@@ -1,4 +1,17 @@
 # -----------------------------------------------------------------
+# Homelab
+# -----------------------------------------------------------------
+
+variable "environment" {
+  description = "The deployment environment (e.g. dev, prod)"
+  type        = string
+  validation {
+    condition     = contains(["dev", "prod"], var.environment)
+    error_message = "environment must be one of: 'dev', 'prod'"
+  }
+}
+
+# -----------------------------------------------------------------
 # Azure
 # -----------------------------------------------------------------
 
@@ -48,17 +61,4 @@ variable "cloudflare_api_token" {
 variable "cloudflare_admin_email" {
   type        = string
   description = "The admin email for Cloudflare"
-}
-
-# -----------------------------------------------------------------
-# Homelab
-# -----------------------------------------------------------------
-
-variable "environment" {
-  description = "The deployment environment (e.g. dev, prod)"
-  type        = string
-  validation {
-    condition     = contains(["dev", "prod"], var.environment)
-    error_message = "environment must be one of: 'dev', 'prod'"
-  }
 }

@@ -11,104 +11,68 @@ description = "Initialize terraform"
 run = ["terraform init"]
 dir = "./terraform"
 
-[tasks."tf:workspace"]
-description = "Creates or switches to workspace"
-run = "terraform workspace select $ENVIRONMENT || terraform workspace new $ENVIRONMENT"
-dir = "./terraform/"
+[tasks."tf:apply:dev"]
+description = "Run terraform apply for dev"
+run = "terraform apply"
+dir = "./terraform/environments/dev"
 
-[tasks."tf:plan"]
-description = "Run terraform plan for"
-run = "terraform plan -var-file=environments/${ENVIRONMENT}.tfvars"
-dir = "./terraform"
-depends = ["tf:workspace"]
-
-[tasks."tf:apply"]
-description = "Run terraform apply for"
-run = "terraform apply -var-file=environments/${ENVIRONMENT}.tfvars"
-dir = "./terraform"
-depends = ["tf:workspace"]
-
-# [tasks."inventory:generate"]
-# run = "./scripts/generate_inventory.sh ${ENVIRONMENT}"
-
-[tasks."ssh:prepare"]
-description = "Get the private SHH key for the homelab server"
+[tasks."ssh:prepare:dev"]
+description = "Get the private SHH key for the homelab dev server"
 run = """
+VAULT_NAME=$(cd ./terraform/environments/dev && terraform output -json | jq -r '.homelab_server_private_key.value.azure_vault_name')
+SECRET_NAME=$(cd ./terraform/environments/dev && terraform output -json | jq -r '.homelab_server_private_key.value.azure_secret_name')
 az keyvault secret show \
---vault-name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.vault_name') \
---name $(terraform output -json | jq -r '.homelab_do_server_private_key.value.secret_name') \
---query value -o tsv > ~/.ssh/do_homelab
-chmod 600 ~/.ssh/do_homelab
+--vault-name $VAULT_NAME \
+--name $SECRET_NAME \
+--query value -o tsv > ~/.ssh/digitalocean_homelab_dev
+chmod 600 ~/.ssh/digitalocean_homelab_dev
 """
-dir = "./terraform/"
-depends = ["tf:workspace"]
 
-[tasks."ansible:prepare"]
-description = "Generate inventory and env variables for ansible"
+[tasks."ansible:prepare:dev"]
+description = "Generate inventory and env variables for ansible dev"
 run = """
-terraform output -raw ansible_inventory > ../ansible/inventory.yaml
-# terraform output -raw ansible_extra_vars > ../ansible/extra-vars.yaml
+(cd ./terraform/environments/dev && terraform output -raw homelab_server_ansible_inventory) > ./ansible/inventory.yaml
 """
-dir = "./terraform"
-depends = ["tf:workspace"]
 
-# [tasks."ansible:run"]
-# run = "ansible-playbook -i inventory/${ENVIRONMENT}.ini playbooks/site.yml -e env=${ENVIRONMENT}"
-
-[tasks."ansible:deploy"]
+[tasks."ansible:deploy:dev"]
 description = "Run ansible playbook against homelab server"
 run = """
-export CLOUDFLARE_TUNNEL_TOKEN=$(cd ../terraform && terraform output -raw cloudflare_tunnel_token)
-ansible-playbook -i inventory.yaml playbook.yaml 
+export CLOUDFLARE_TUNNEL_TOKEN=$(cd ./terraform/environments/dev && terraform output -raw homelab_server_cloudflare_tunnel_token)
+cd ./ansible && ansible-playbook -i inventory.yaml playbook.yaml 
 """
-dir = "./ansible"
-depends = ["tf:workspace"]
 
-[tasks."docker:prepare"]
+[tasks."docker:prepare:dev"]
 description = "Create env file and context for homelab deployment"
 run = """
-echo "CLOUDFLARE_TUNNEL_TOKEN=$(cd ./terraform && terraform output -raw cloudflare_tunnel_token)" > ./docker/.env
-SERVER_IP=$(cd ./terraform && terraform output -raw homelab_do_ipv4)
+echo "CLOUDFLARE_TUNNEL_TOKEN=$(cd ./terraform/environments/dev && terraform output -raw homelab_server_cloudflare_tunnel_token)" > ./docker/.env
+SERVER_IP=$(cd ./terraform/environments/dev && terraform output -raw homelab_server_ipv4)
 cd ./docker
 docker context rm homelab-${ENVIRONMENT} 2>/dev/null || true
 docker context create homelab-${ENVIRONMENT} --docker "host=ssh://root@$SERVER_IP"
 """
-depends = ["tf:workspace"]
 
-[tasks."docker:deploy"]
+[tasks."docker:deploy:dev"]
 description = "Deploy the docker compose to the homelab"
 run = """
 if [ -z "$SSH_AUTH_SOCK" ]; then
     eval $(ssh-agent)
 fi
-ssh-add ~/.ssh/do_homelab
+ssh-add ~/.ssh/digitalocean_homelab_dev
 docker --context homelab-${ENVIRONMENT} compose up -d --remove-orphans
 """
 dir = "./docker"
 
-[tasks."deploy:full"]
-description = "Deploy the full homelab"
-run = """
-mise run tf:init
-mise run tf:apply
-mise run ssh:prepare
-mise run ansible:prepare
-mise run ansible:deploy
-mise run docker:prepare
-mise run docker:deploy
-"""
 
-[tasks."destroy:full"]
-description = "Destroys the full homelab"
+[tasks."destroy:dev"]
+description = "Destroys the full dev homelab"
 run = """
 if [ -z "$SSH_AUTH_SOCK" ]; then
     eval $(ssh-agent)
 fi
-ssh-add ~/.ssh/do_homelab
+ssh-add ~/.ssh/digitalocean_homelab_dev
 cd docker
 docker --context homelab-${ENVIRONMENT} compose down
 cd ..
-cd terraform
+cd terraform/environments/dev
 terraform apply -destroy -auto-approve
 """
-depends = ["tf:workspace"]

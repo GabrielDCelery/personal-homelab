@@ -19,10 +19,10 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name  = "rg-gazelab-glob-tfstate"
-    storage_account_name = "stgazelabglobtfstate"
-    container_name       = "gazelab-glob-tfstate"
-    key                  = "terraform.dev.tfstate"
+    resource_group_name  = "rg-homelab-tfstate-glob"
+    storage_account_name = "gazehomelabtfstateglob"
+    container_name       = "sc-homelab-tfstate-glob"
+    key                  = "homelab-dev.tfstate"
   }
 }
 
@@ -34,11 +34,7 @@ provider "azurerm" {
   subscription_id = var.azure_homelab_subscription_id
   features {}
 }
-#
-# provider "aws" {
-#   region = var.aws_region
-# }
 
 provider "digitalocean" {
-  token = var.digitalocean_token
+  token = sensitive(var.digitalocean_token)
 }
