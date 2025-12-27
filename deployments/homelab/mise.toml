@@ -6,10 +6,10 @@ pipx = "1.8.0"
 python = "3.11"
 terraform = "1.13"
 
-[tasks."tf:init"]
+[tasks."tf:init:dev"]
 description = "Initialize terraform"
 run = ["terraform init"]
-dir = "./terraform"
+dir = "./terraform/environments/dev"
 
 [tasks."tf:apply:dev"]
 description = "Run terraform apply for dev"
