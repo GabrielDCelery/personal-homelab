@@ -1,15 +1,15 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/services/
 
-- My First Group:
-    - My First Service:
+- DigitalOcean:
+    - Nginx:
         icon: alexa.png
         href: /nginx
         description: To nginx
         statusStyle: "dot"
         ping: nginx
 
-- My second group:
+- Core:
     - Traefik:
         icon: traefik.png
         href: /traefik/dashboard/
