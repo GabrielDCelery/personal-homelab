@@ -5,6 +5,7 @@ entryPoints:
 api:
   dashboard: true
   insecure: true # using cloudflare tunnel, hence why not handling TLS certs with traefik just internal routing
+  basepath: "/traefik/"
 
 providers:
   docker:

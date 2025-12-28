@@ -20,15 +20,10 @@ services:
     networks:
       - tunnel
       - frontend
-      # labels:
-      #   # traefik labels
-      #   - "traefik.enable=true"
-      #   - "traefik.http.routers.reverse_proxy.rule=PathPrefix(`/traefik`)"
-      #   - "traefik.http.routers.reverse_proxy.service=api@internal" # this tells traefik to route to it's own internal api
-      #   - "traefik.http.routers.reverse_proxy.entrypoints=web"
-      #   - "traefik.http.routers.reverse_proxy.middlewares=reverse_proxy-stripprefix"
-      #   - "traefik.http.middlewares.reverse_proxy-stripprefix.stripprefix.prefixes=/traefik"
-      #   - "traefik.http.services.reverse_proxy.loadbalancer.server.port=8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=PathPrefix(`/traefik/api`) || PathPrefix(`/traefik/dashboard`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
 
   homepage:
     image: ghcr.io/gethomepage/homepage:v1.8
@@ -43,7 +38,7 @@ services:
     labels:
       # traefik labels
       - "traefik.enable=true"
-      - "traefik.http.routers.homepage.rule=PathPrefix(`/`)" # Catches all traffic
+      - "traefik.http.routers.homepage.rule=PathPrefix(`/`)"
       - "traefik.http.routers.homepage.entrypoints=web"
       - "traefik.http.services.homepage.loadbalancer.server.port=3000"
 
