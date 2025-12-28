@@ -1,0 +1,20 @@
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/services/
+
+- My First Group:
+    - My First Service:
+        icon: alexa.png
+        href: /nginx
+        description: To nginx
+        statusStyle: "dot"
+        ping: nginx
+
+# - My second group:
+#     - Traefik:
+#         icon: traefik.png
+#         description: Internal routing
+#         # statusStyle: "dot"
+#         # ping: reverse_proxy
+#         widget:
+#           type: traefik
+#           url: http://reverse_proxy:8080
