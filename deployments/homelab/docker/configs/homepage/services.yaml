@@ -9,12 +9,13 @@
         statusStyle: "dot"
         ping: nginx
 
-# - My second group:
-#     - Traefik:
-#         icon: traefik.png
-#         description: Internal routing
-#         # statusStyle: "dot"
-#         # ping: reverse_proxy
-#         widget:
-#           type: traefik
-#           url: http://reverse_proxy:8080
+- My second group:
+    - Traefik:
+        icon: traefik.png
+        href: /traefik/dashboard/
+        description: Internal routing
+        statusStyle: "dot"
+        ping: traefik
+        widget:
+          type: traefik
+          url: http://traefik/traefik
