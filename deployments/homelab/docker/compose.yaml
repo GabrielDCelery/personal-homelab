@@ -33,6 +33,7 @@ services:
       - /opt/homelab/configs/homepage:/app/config # Config
     environment:
       HOMEPAGE_ALLOWED_HOSTS: '*'
+    restart: unless-stopped
     networks:
       - frontend
     labels:
@@ -47,6 +48,7 @@ services:
     container_name: nginx
     networks:
       - frontend
+    restart: unless-stopped
     labels:
       # traefik labels
       - "traefik.enable=true"
