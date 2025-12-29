@@ -1,15 +1,7 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/services/
 
-- DigitalOcean:
-    - Nginx:
-        icon: alexa.png
-        href: /nginx
-        description: To nginx
-        statusStyle: "dot"
-        ping: nginx
-
-- Core:
+- System:
     - Traefik:
         icon: traefik.png
         href: /traefik/dashboard/
@@ -19,3 +11,30 @@
         widget:
           type: traefik
           url: http://traefik/traefik
+
+    - Netdata:
+        icon: netdata.png
+        href: /netdata
+        description: Systems monitoring
+        statusStyle: "dot"
+        ping: netdata
+        widget:
+          type: netdata
+          url: http://netdata:19999
+
+- Work:
+    - Nginx:
+        icon: alexa.png
+        href: /nginx
+        description: To nginx
+        statusStyle: "dot"
+        ping: nginx
+
+- Personal:
+    - Nginx:
+        icon: alexa.png
+        href: /nginx
+        description: To nginx
+        statusStyle: "dot"
+        ping: nginx
+

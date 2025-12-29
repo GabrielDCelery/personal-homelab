@@ -58,6 +58,29 @@ services:
       - "traefik.http.routers.nginx.middlewares=nginx-stripprefix"
       - "traefik.http.middlewares.nginx-stripprefix.stripprefix.prefixes=/nginx"
 
+  netdata:
+    image: netdata/netdata:v2.8.4
+    container_name: netdata
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor=unconfined
+    networks:
+      - frontend
+      - tunnel
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.netdata.rule=PathPrefix(`/netdata`)"
+      - "traefik.http.routers.netdata.entrypoints=web"
+      - "traefik.http.services.netdata.loadbalancer.server.port=19999"
+      - "traefik.http.routers.netdata.middlewares=netdata-stripprefix"
+      - "traefik.http.middlewares.netdata-stripprefix.stripprefix.prefixes=/netdata"
+
 networks:
   tunnel:
   frontend:
