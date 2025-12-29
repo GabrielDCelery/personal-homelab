@@ -5,7 +5,55 @@
   become: true
   vars:
     cloudflare_tunnel_token: "{{ lookup('env', 'CLOUDFLARE_TUNNEL_TOKEN') }}"
+    swap_file_size: "1G"
   tasks:
+    # sudo stat /swapfile
+    - name: Check if swap file exists
+      ansible.builtin.stat:
+        path: /swapfile
+      register: swap_file_check
+
+    # sudo fallocate -l 1G /swapfile
+    - name: Create swap file
+      ansible.builtin.command:
+        cmd: fallocate -l {{ swap_file_size }} /swapfile
+      when: not swap_file_check.stat.exists
+
+    # sudo chmod 600 /swapfile
+    - name: Set swap file permission
+      ansible.builtin.file:
+        path: /swapfile
+        owner: root
+        group: root
+        mode: '0600'
+      when: not swap_file_check.stat.exists
+
+    # sudo mkswap /swapfile
+    - name: Format swapfile
+      ansible.builtin.command:
+        cmd: mkswap /swapfile
+      when: not swap_file_check.stat.exists
+
+    # sudo swapon --show
+    - name: Check if swap is enabled
+      ansible.builtin.command:
+        cmd: swapon --show
+      register: swap_status
+      changed_when: false
+      failed_when: false
+
+    - name: Enable swap file
+      ansible.builtin.command:
+        cmd: swapon /swapfile
+      when: "'/swapfile' not in swap_status.stdout"
+
+    - name: Ensure swap is mounted on boot
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        line: '/swapfile none swap sw 0 0'
+        state: present
+        create: false
+
     # sudo apt-get update
     - name: Update apt cache
       ansible.builtin.apt:
