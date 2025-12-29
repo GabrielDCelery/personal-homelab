@@ -58,28 +58,49 @@ services:
       - "traefik.http.routers.nginx.middlewares=nginx-stripprefix"
       - "traefik.http.middlewares.nginx-stripprefix.stripprefix.prefixes=/nginx"
 
-  netdata:
-    image: netdata/netdata:v2.8.4
-    container_name: netdata
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - apparmor=unconfined
+  # netdata:
+  #   image: netdata/netdata:v2.8.4
+  #   container_name: netdata
+  #   cap_add:
+  #     - SYS_PTRACE
+  #   security_opt:
+  #     - apparmor=unconfined
+  #   networks:
+  #     - frontend
+  #     - tunnel
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /proc:/host/proc:ro
+  #     - /sys:/host/sys:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.netdata.rule=PathPrefix(`/netdata`)"
+  #     - "traefik.http.routers.netdata.entrypoints=web"
+  #     - "traefik.http.services.netdata.loadbalancer.server.port=19999"
+  #     - "traefik.http.routers.netdata.middlewares=netdata-stripprefix"
+  #     - "traefik.http.middlewares.netdata-stripprefix.stripprefix.prefixes=/netdata"
+
+  glances:
+    image: nicolargo/glances:4.4.1
+    container_name: glances
+    restart: unless-stopped
+    pid: host
     networks:
       - frontend
       - tunnel
-    restart: unless-stopped
     volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/homelab/configs/glances:/etc/glances
+    environment:
+      - "GLANCES_OPT=-w"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.netdata.rule=PathPrefix(`/netdata`)"
-      - "traefik.http.routers.netdata.entrypoints=web"
-      - "traefik.http.services.netdata.loadbalancer.server.port=19999"
-      - "traefik.http.routers.netdata.middlewares=netdata-stripprefix"
-      - "traefik.http.middlewares.netdata-stripprefix.stripprefix.prefixes=/netdata"
+      - "traefik.http.routers.glances.rule=PathPrefix(`/glances`)"
+      - "traefik.http.routers.glances.entrypoints=web"
+      - "traefik.http.services.glances.loadbalancer.server.port=61208"
+      # - "traefik.http.routers.glances.middlewares=glances-stripprefix"
+      # - "traefik.http.middlewares.glances-stripprefix.stripprefix.prefixes=/glances"
 
 networks:
   tunnel:

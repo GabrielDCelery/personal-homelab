@@ -12,15 +12,41 @@
           type: traefik
           url: http://traefik/traefik
 
-    - Netdata:
-        icon: netdata.png
-        href: /netdata
-        description: Systems monitoring
+    # - Netdata:
+    #     icon: netdata.png
+    #     href: /netdata
+    #     description: Systems monitoring
+    #     statusStyle: "dot"
+    #     ping: netdata
+    #     widget:
+    #       type: netdata
+    #       url: http://netdata:19999
+
+    - Glances:
+        icon: glances.png
+        href: /glances
+        description: System monitoring
         statusStyle: "dot"
-        ping: netdata
+        ping: glances
+
+    - System:
+        href: /glances
         widget:
-          type: netdata
-          url: http://netdata:19999
+          type: glances
+          url: http://glances:61208/glances
+          version: 4 # required only if running glances v4 or higher, defaults to 3
+          metric: info
+          # chart: false
+
+    - Containers:
+        href: /glances
+        widget:
+          type: glances
+          url: http://glances:61208/glances
+          version: 4 # required only if running glances v4 or higher, defaults to 3
+          metric: containers
+          # chart: false
+
 
 - Work:
     - Nginx:
