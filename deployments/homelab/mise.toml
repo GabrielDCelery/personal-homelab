@@ -2,77 +2,152 @@
 ansible = "12.1.0"
 azure-cli = "2.81.0"
 jq = "1.8.1"
+kubectl = "1.35.0"
+kubeseal = "0.34.0"
 pipx = "1.8.0"
 python = "3.11"
 terraform = "1.13"
 
+##############################################################################################################
+# DEV deployment
+##############################################################################################################
+
+#### Terraform
+
 [tasks."tf:init:dev"]
-description = "Initialize terraform"
+description = "Initialize terraform for 'dev' environment"
 run = ["terraform init"]
 dir = "./terraform/environments/dev"
 
 [tasks."tf:apply:dev"]
-description = "Run terraform apply for dev"
+description = "Apply terraform changes in 'dev' environment"
 run = "terraform apply"
 dir = "./terraform/environments/dev"
+
+#### SSH
 
 [tasks."ssh:prepare:dev"]
 description = "Get the private SHH key for the homelab dev server"
 run = """
-VAULT_NAME=$(cd ./terraform/environments/dev && terraform output -json | jq -r '.homelab_server_private_key.value.azure_vault_name')
-SECRET_NAME=$(cd ./terraform/environments/dev && terraform output -json | jq -r '.homelab_server_private_key.value.azure_secret_name')
+VAULT_NAME=$(cd ./terraform/environments/dev && terraform output -raw ssh_key_vault_name)
+SECRET_NAME=$(cd ./terraform/environments/dev && terraform output -raw ssh_key_secret_name)
 az keyvault secret show \
---vault-name $VAULT_NAME \
---name $SECRET_NAME \
---query value -o tsv > ~/.ssh/digitalocean_homelab_dev
-chmod 600 ~/.ssh/digitalocean_homelab_dev
+    --vault-name $VAULT_NAME \
+    --name $SECRET_NAME \
+    --query value -o tsv > $HOME/.ssh/do_homelab_dev
+chmod 600 $HOME/.ssh/do_homelab_dev
 """
+
+#### Ansible
 
 [tasks."ansible:prepare:dev"]
 description = "Generate inventory and env variables for ansible dev"
 run = """
-(cd ./terraform/environments/dev && terraform output -raw homelab_server_ansible_inventory) > ./ansible/inventory.yaml
+set -e
+INVENTORY=$(cd ./terraform/environments/dev && terraform output -raw ansible_inventory)
+echo "$INVENTORY" > ./ansible/inventory.yaml
 """
 
 [tasks."ansible:deploy:dev"]
 description = "Run ansible playbook against homelab server"
 run = """
-export CLOUDFLARE_TUNNEL_TOKEN=$(cd ./terraform/environments/dev && terraform output -raw homelab_server_cloudflare_tunnel_token)
+export CLOUDFLARE_TUNNEL_TOKEN=$(cd ./terraform/environments/dev && terraform output -raw cloudflare_tunnel_token)
 cd ./ansible && ansible-playbook -i inventory.yaml playbook.yaml 
 """
+#### K8s
 
-[tasks."docker:prepare:dev"]
-description = "Create env file and context for homelab deployment"
-run = """
-echo "CLOUDFLARE_TUNNEL_TOKEN=$(cd ./terraform/environments/dev && terraform output -raw homelab_server_cloudflare_tunnel_token)" > ./docker/.env
-SERVER_IP=$(cd ./terraform/environments/dev && terraform output -raw homelab_server_ipv4)
-cd ./docker
-docker context rm homelab-${ENVIRONMENT} 2>/dev/null || true
-docker context create homelab-${ENVIRONMENT} --docker "host=ssh://root@$SERVER_IP"
-"""
-
-[tasks."docker:deploy:dev"]
-description = "Deploy the docker compose to the homelab"
+[tasks."k8s:prepare:dev"]
+description = "Get kubernetes config from homelab server"
 run = """
 if [ -z "$SSH_AUTH_SOCK" ]; then
     eval $(ssh-agent)
 fi
-ssh-add ~/.ssh/digitalocean_homelab_dev
-docker --context homelab-${ENVIRONMENT} compose up -d --remove-orphans
+ssh-add $HOME/.ssh/do_homelab_dev
+HOMELAB_SERVER_IP=$(cd ./terraform/environments/dev && terraform output -raw server_ipv4)
+scp root@$HOMELAB_SERVER_IP:/etc/rancher/k3s/k3s.yaml $HOME/.kube/homelab-config-dev
+sed -i "s/127.0.0.1/$HOMELAB_SERVER_IP/g" $HOME/.kube/homelab-config-dev
 """
-dir = "./docker"
+
+[tasks."k8s:deploy:dev"]
+description = "Deploy Kubernetes manifests to homelab cluster"
+run = """
+kubectl apply -f kubernetes/
+"""
 
 
-[tasks."destroy:dev"]
+#### Orchestration
+
+[tasks."deploy:full:dev"]
+description = "Deploys the full dev homelab"
+run = [
+    "mise run tf:init:dev",
+    "mise run tf:apply:dev",
+    "mise run ssh:prepare:dev && mise run ansible:prepare:dev",
+    "mise run ansible:deploy:dev",
+    "mise run k8s:prepare:dev",
+    "mise run k8s:deploy:dev",
+]
+
+[tasks."destroy:full:dev"]
 description = "Destroys the full dev homelab"
-run = """
-if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval $(ssh-agent)
-fi
-ssh-add ~/.ssh/digitalocean_homelab_dev
-cd docker
-docker --context homelab-${ENVIRONMENT} compose down
-cd ..
-cd terraform/environments/dev
-terraform apply -destroy -auto-approve
-"""
+run = [
+    "kubectl delete -f kubernetes/",
+    "cd ./terraform/environments/dev && terraform apply -destroy -auto-approve",
+]
+
+
+# [tasks."k8s:secrets:dev"]
+# description = "Create Kubernetes secrets from Terraform outputs"
+# run = """
+# # export KUBECONFIG=~/.kube/homelab-config-dev
+#
+# # Get the Cloudflare tunnel token from Terraform
+# CLOUDFLARE_TOKEN=$(cd ./terraform/environments/dev && terraform output -raw homelab_server_cloudflare_tunnel_token)
+#
+# # Create namespace if it doesn't exist
+# kubectl create namespace homelab --dry-run=client -o yaml | kubectl apply -f -
+#
+# # Create or update the secret
+# kubectl create secret generic cloudflare-tunnel-token \
+#   --from-literal=token="$CLOUDFLARE_TOKEN" \
+#   --namespace=homelab \
+#   --dry-run=client -o yaml | kubectl apply -f -
+#
+# echo "✓ Secret created successfully"
+# """
+#
+# [tasks."k8s:deploy:dev"]
+# description = "Deploy Kubernetes manifests to homelab cluster"
+# run = """
+# export KUBECONFIG=~/.kube/homelab-config-dev
+# kubectl apply -f kubernetes/08-test.yaml
+#
+# # # Apply all manifests
+# # kubectl apply -f kubernetes/
+# #
+# # # Show deployment status
+# # echo ""
+# # echo "Deployment status:"
+# # kubectl get pods -n homelab
+# """
+#
+# [tasks."docker:deploy:dev"]
+# description = "Deploy the docker compose to the homelab"
+# run = """
+# if [ -z "$SSH_AUTH_SOCK" ]; then
+#     eval $(ssh-agent)
+# fi
+# ssh-add ~/.ssh/digitalocean_homelab_dev
+# docker --context homelab-${ENVIRONMENT} compose up -d --remove-orphans
+# """
+# dir = "./docker"
+
+# [tasks."docker:prepare:dev"]
+# description = "Create env file and context for homelab deployment"
+# run = """
+# echo "CLOUDFLARE_TUNNEL_TOKEN=$(cd ./terraform/environments/dev && terraform output -raw homelab_server_cloudflare_tunnel_token)" > ./docker/.env
+# SERVER_IP=$(cd ./terraform/environments/dev && terraform output -raw homelab_server_ipv4)
+# cd ./docker
+# docker context rm homelab-${ENVIRONMENT} 2>/dev/null || true
+# docker context create homelab-${ENVIRONMENT} --docker "host=ssh://root@$SERVER_IP"
+# """

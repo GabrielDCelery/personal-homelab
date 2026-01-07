@@ -11,23 +11,27 @@ module "cloudflare_tunnel" {
   cloudflare_zone_name  = var.cloudflare_zone_name
   cloudflare_account_id = var.cloudflare_account_id
   cloudflare_zone_id    = var.cloudflare_zone_id
-  homelab_server_ipv4   = module.digitalocean_server.homelab_server_ipv4
+  homelab_server_ipv4   = module.digitalocean_server.server_ipv4
   depends_on            = [module.digitalocean_server]
 }
 
-output "homelab_server_ipv4" {
-  value = module.digitalocean_server.homelab_server_ipv4
+output "server_ipv4" {
+  value = module.digitalocean_server.server_ipv4
 }
 
-output "homelab_server_private_key" {
-  value = module.digitalocean_server.homelab_server_private_key
+output "ssh_key_vault_name" {
+  value = module.digitalocean_server.ssh_key_vault_name
 }
 
-output "homelab_server_ansible_inventory" {
-  value = module.digitalocean_server.homelab_server_ansible_inventory
+output "ssh_key_secret_name" {
+  value = module.digitalocean_server.ssh_key_secret_name
 }
 
-output "homelab_server_cloudflare_tunnel_token" {
-  value     = module.cloudflare_tunnel.homelab_server_cloudflare_tunnel_token
+output "ansible_inventory" {
+  value = module.digitalocean_server.ansible_inventory
+}
+
+output "cloudflare_tunnel_token" {
+  value     = module.cloudflare_tunnel.cloudflare_tunnel_token
   sensitive = true
 }

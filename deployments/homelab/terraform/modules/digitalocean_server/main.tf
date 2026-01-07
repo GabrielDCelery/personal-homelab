@@ -112,10 +112,11 @@ resource "digitalocean_project" "homelab" {
 }
 
 resource "digitalocean_droplet" "homelab" {
-  image    = "ubuntu-24-04-x64"
-  name     = "homelab"
-  region   = "ams3"
-  size     = "s-1vcpu-512mb-10gb"
+  image  = "ubuntu-24-04-x64"
+  name   = "homelab"
+  region = "ams3"
+  # size     = "s-1vcpu-512mb-10gb"
+  size     = "s-1vcpu-1gb"
   backups  = false
   ssh_keys = [digitalocean_ssh_key.homelab_public_key.fingerprint]
 }
@@ -128,6 +129,18 @@ resource "digitalocean_firewall" "homelab" {
   inbound_rule {
     protocol         = "tcp"
     port_range       = "22"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "80"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "6443"
     source_addresses = ["0.0.0.0/0", "::/0"]
   }
 

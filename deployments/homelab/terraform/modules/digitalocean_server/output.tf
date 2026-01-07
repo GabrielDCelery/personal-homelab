@@ -1,15 +1,16 @@
-output "homelab_server_ipv4" {
+output "server_ipv4" {
   value = digitalocean_droplet.homelab.ipv4_address
 }
 
-output "homelab_server_private_key" {
-  value = {
-    azure_vault_name  = azurerm_key_vault.homelab.name
-    azure_secret_name = azurerm_key_vault_secret.homelab_private_key.name
-  }
+output "ssh_key_vault_name" {
+  value = azurerm_key_vault.homelab.name
 }
 
-output "homelab_server_ansible_inventory" {
+output "ssh_key_secret_name" {
+  value = azurerm_key_vault_secret.homelab_private_key.name
+}
+
+output "ansible_inventory" {
   value = yamlencode({
     homelab = {
       hosts = {
