@@ -67,7 +67,7 @@ HOMELAB_SERVER_IP=$(cd ./terraform/environments/dev && terraform output -raw ser
 scp root@$HOMELAB_SERVER_IP:/etc/rancher/k3s/k3s.yaml $HOME/.kube/homelab-config-dev
 sed -i "s/127.0.0.1/$HOMELAB_SERVER_IP/g" $HOME/.kube/homelab-config-dev
 
-CLOUDFLARE_TOKEN=$(terraform output -raw cloudflare_tunnel_token)
+CLOUDFLARE_TOKEN=$(cd ./terraform/environments/dev && terraform output -raw cloudflare_tunnel_token)
 kubectl create secret generic cloudflare-tunnel-token \
     --namespace homelab \
     --from-literal=token="$CLOUDFLARE_TOKEN" \

@@ -1,0 +1,92 @@
+# Cloudflare Tunnel Deployment
+# Purpose: Connects your Kubernetes cluster to Cloudflare's edge network
+# Traffic flow: Internet → Cloudflare → This tunnel → Services in cluster
+apiVersion: apps/v1
+# - What it is: Declares this as a Kubernetes Deployment resource
+# - Behavior: Creates and manages pods; ensures desired number of replicas are running
+kind: Deployment
+metadata:
+  # - name: The deployment is named "cloudflared-tunnel"
+  # - namespace: Lives in the "homelab" namespace
+  # - Behavior: All commands need -n homelab to access this deployment
+  name: cloudflared-tunnel
+  namespace: homelab
+spec:
+  # - What it does: Run exactly 1 copy of the cloudflared pod
+  # - Behavior: If the pod crashes, Kubernetes automatically creates a new one
+  # - Scale: Usually keep at 1, but can scale to 2-4 for redundancy
+  # - Note: Multiple replicas will all connect to Cloudflare (load balanced automatically)
+  replicas: 1
+  selector:
+    # - What it does: Tells the Deployment which pods it manages
+    # - Behavior: Looks for pods with label app: cloudflared-tunnel
+    # - Critical: This must match the labels in template.metadata.labels below
+    matchLabels:
+      app: cloudflared-tunnel
+  template:
+    metadata:
+      # - What it does: Defines the pod template and applies labels to created pods
+      # - Behavior: Every pod created gets the label app: cloudflared-tunnel
+      # - Why important: Allows you to query/manage these pods with kubectl
+      labels:
+        app: cloudflared-tunnel
+    spec:
+      containers:
+        # - name: Container name within the pod (just for identification)
+        # - image: Uses Cloudflare's cloudflared version 2025.11.1
+        # - Behavior: Kubernetes pulls this image and runs it
+        # - Purpose: This container connects to Cloudflare and creates the tunnel
+        - name: cloudflared
+          image: cloudflare/cloudflared:2025.11.1
+          args:
+            # - What it does: Tells cloudflared to run in tunnel mode
+            # - Behavior: Connects to Cloudflare's network using the tunnel protocol
+            # - Alternative modes: access (for Access client), proxy-dns, etc.
+            - tunnel
+            # - What it does: Disables automatic updates of the cloudflared binary
+            # - Behavior: Version stays fixed at what's in the container image
+            # - Why: Prevents unexpected changes; updates happen via image version changes
+            # - Production: Good practice to control updates via deployment, not auto-update
+            - --no-autoupdate
+            # - What it does: Start the tunnel using credentials/token
+            # - Behavior: Establishes persistent connection to Cloudflare edge
+            # - Alternative: 'tunnel run --credentials-file' for credentials file approach
+            - run
+            # - What it does: Specifies that the next argument is the tunnel token
+            # - Behavior: Used for authentication with Cloudflare
+            # - Token contains: Tunnel ID, account ID, and secret
+            - --token
+            # - What it does: References environment variable CLOUDFLARE_TUNNEL_TOKEN
+            # - Behavior: Shell-style variable expansion $(VAR_NAME)
+            # - Value: Comes from the env section below (loaded from Kubernetes Secret)
+            # - Security: Token is sensitive and should never be hardcoded
+            - $(CLOUDFLARE_TUNNEL_TOKEN)
+          env:
+            # - What it does: Defines environment variable for the container
+            # - name: Variable name that will be available in the container
+            # - Behavior: This variable is referenced in args as $(CLOUDFLARE_TUNNEL_TOKEN)
+            - name: CLOUDFLARE_TUNNEL_TOKEN
+              # - What it does: Specifies where to get the value from
+              # - Behavior: Instead of hardcoding, load from a Kubernetes resource
+              # - Options: secretKeyRef, configMapKeyRef, fieldRef, resourceFieldRef
+              valueFrom:
+                # - What it does: Load value from a Kubernetes Secret
+                # - Behavior: Secrets are base64 encoded and stored in etcd
+                # - Security: More secure than ConfigMaps (not shown in logs by default)
+                # - Alternative: configMapKeyRef for non-sensitive data
+                secretKeyRef:
+                  # - name: The name of the Secret resource to read from
+                  # - Location: Must exist in the same namespace (homelab)
+                  # - Created by: Your sealed secret (01-cloudflare-tunnel-secret.yaml)
+                  name: cloudflare-tunnel-token
+                  # - key: The specific key within the Secret's data
+                  # - Behavior: Secrets can have multiple key-value pairs; this selects one
+                  # - Your secret: Has a key called "token" containing the tunnel token
+                  key: token
+      # - What it does: Policy for when to restart the pod
+      # - Always: Restart on any exit (success or failure)
+      # - OnFailure: Only restart on failure (exit code != 0)
+      # - Never: Never restart automatically
+      # - Behavior: For cloudflared, "Always" ensures tunnel stays connected
+      # - Important: Tunnel needs to maintain persistent connection to Cloudflare
+      restartPolicy: Always
