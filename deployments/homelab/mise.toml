@@ -66,6 +66,13 @@ ssh-add $HOME/.ssh/do_homelab_dev
 HOMELAB_SERVER_IP=$(cd ./terraform/environments/dev && terraform output -raw server_ipv4)
 scp root@$HOMELAB_SERVER_IP:/etc/rancher/k3s/k3s.yaml $HOME/.kube/homelab-config-dev
 sed -i "s/127.0.0.1/$HOMELAB_SERVER_IP/g" $HOME/.kube/homelab-config-dev
+
+CLOUDFLARE_TOKEN=$(terraform output -raw cloudflare_tunnel_token)
+kubectl create secret generic cloudflare-tunnel-token \
+    --namespace homelab \
+    --from-literal=token="$CLOUDFLARE_TOKEN" \
+    --dry-run=client -o yaml | \
+    kubeseal -o yaml > ./kubernetes/01-cloudflare-tunnel-secret.yaml
 """
 
 [tasks."k8s:deploy:dev"]
