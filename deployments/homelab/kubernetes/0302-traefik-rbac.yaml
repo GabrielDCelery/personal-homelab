@@ -1,19 +1,10 @@
 # RBAC Configuration for Traefik Gateway API Provider
 # Source: Based on official Traefik RBAC manifest
+# https://doc.traefik.io/traefik/reference/install-configuration/providers/kubernetes/kubernetes-gateway
+# https://doc.traefik.io/traefik/reference/dynamic-configuration/kubernetes-gateway-rbac.yml
 # https://raw.githubusercontent.com/traefik/traefik/v3.6/docs/content/reference/dynamic-configuration/kubernetes-gateway-rbac.yml
 # Modified for homelab namespace
 
-# ServiceAccount - Identity for Traefik
-# - What it is: Creates a Kubernetes identity that the Traefik pod will run as
-# - Why needed: Without this, Traefik runs as "default" ServiceAccount with no permissions
-# - Behavior: When we assign this to the Traefik deployment, it inherits all RBAC permissions
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: traefik-controller
-  namespace: homelab
-
----
 # ClusterRole - Defines what permissions Traefik needs
 # - Scope: Cluster-wide (can read resources across all namespaces)
 # - Why ClusterRole not Role: Traefik needs to discover Gateways/Services in any namespace
