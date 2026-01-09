@@ -49,6 +49,11 @@ spec:
             # - Security: ⚠ Use only behind Cloudflare Access or similar protection
             # - Production: Set to false and configure proper auth
             - --api.insecure=true
+            # - What it does: Sets the base path for the dashboard
+            # - Behavior: Dashboard becomes accessible at /traefik/dashboard instead of /dashboard
+            # - Source: https://doc.traefik.io/traefik/reference/install-configuration/api-dashboard/
+            # - Note: No trailing slash (use /traefik not /traefik/)
+            - --api.basepath=/traefik
             # - What it does: Creates an entrypoint (listening port) named "web" on port 80
             # - Behavior: Traefik listens for HTTP traffic on port 80
             # - Routing: Routes and Ingresses can specify which entrypoint to use

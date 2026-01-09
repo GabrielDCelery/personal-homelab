@@ -1,0 +1,40 @@
+# Gateway - Defines network listeners (like Traefik entrypoints)
+# - What it is: Configures which ports/protocols Traefik should listen on
+# - Comparison to Docker: Similar to --entrypoints.web.address=:80 in docker setup
+# - Behavior: Creates listeners that HTTPRoutes can attach to
+# - Scope: Namespaced (in homelab namespace)
+# Source: https://gateway-api.sigs.k8s.io/api-types/gateway/
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: homelab-gateway
+  namespace: homelab
+spec:
+  # - What it does: Links this Gateway to the GatewayClass (Traefik controller)
+  # - Behavior: Tells Traefik "you should manage this Gateway"
+  # - Must match: The GatewayClass name from 04-gateway-class.yaml
+  gatewayClassName: traefik
+
+  # - What it is: Defines the network listeners (ports/protocols)
+  # - Comparison: Like "entrypoints" in Traefik Docker config
+  # - Behavior: Each listener can have HTTPRoutes attached to it
+  listeners:
+    # HTTP listener on port 80
+    # - name: Human-readable identifier for this listener
+    # - Behavior: HTTPRoutes reference this by name to attach routes
+    - name: http
+      # - What it does: Which port to listen on
+      # - Behavior: Traefik will listen on port 80 inside the pod
+      # - Must match: The containerPort 80 in 03-traefik.yaml
+      port: 80
+      # - What it does: Which protocol to use
+      # - Options: HTTP, HTTPS, TCP, TLS
+      # - Behavior: Traefik expects HTTP traffic on this listener
+      protocol: HTTP
+      # - What it does: Controls which HTTPRoutes can attach to this listener
+      # - from: Specifies namespace selector
+      # - namespaces.from: Same = only HTTPRoutes in "homelab" namespace can attach
+      # - Security: Prevents other namespaces from hijacking this Gateway
+      allowedRoutes:
+        namespaces:
+          from: Same
