@@ -1,0 +1,130 @@
+# RBAC Configuration for Traefik Gateway API Provider
+# Source: Based on official Traefik RBAC manifest
+# https://raw.githubusercontent.com/traefik/traefik/v3.6/docs/content/reference/dynamic-configuration/kubernetes-gateway-rbac.yml
+# Modified for homelab namespace
+
+# ServiceAccount - Identity for Traefik
+# - What it is: Creates a Kubernetes identity that the Traefik pod will run as
+# - Why needed: Without this, Traefik runs as "default" ServiceAccount with no permissions
+# - Behavior: When we assign this to the Traefik deployment, it inherits all RBAC permissions
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-controller
+  namespace: homelab
+
+---
+# ClusterRole - Defines what permissions Traefik needs
+# - Scope: Cluster-wide (can read resources across all namespaces)
+# - Why ClusterRole not Role: Traefik needs to discover Gateways/Services in any namespace
+# - Behavior: Lists all API resources and verbs (get, list, watch, update) Traefik requires
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: traefik-gateway-role
+rules:
+  # Core Kubernetes API resources
+  # - Why namespaces: To discover which namespaces contain Gateway resources
+  # - Why pods: For OpenTelemetry traces (inject pod metadata into traces)
+  # - Why services: To find backend services referenced in HTTPRoutes
+  # - Why secrets: For TLS certificates referenced in Gateway listeners
+  # - Why configmaps: For additional configuration data
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - secrets
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+
+  # Service discovery
+  # - Why endpointslices: To get actual pod IPs for load balancing
+  # - Behavior: When HTTPRoute points to a Service, Traefik reads EndpointSlices to find pod IPs
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - list
+      - watch
+
+  # Gateway API resources - Read permissions
+  # - Why: Traefik reads these to build routing configuration
+  # - gatewayclasses: Defines which Gateway controller implementation to use
+  # - gateways: Defines listeners (ports/protocols) and routing rules
+  # - httproutes: HTTP routing rules (path matching, headers, etc.)
+  # - grpcroutes: gRPC-specific routing
+  # - tcproutes/tlsroutes: Layer 4 TCP/TLS routing
+  # - referencegrants: Cross-namespace resource references
+  # - backendtlspolicies: TLS configuration for backend connections
+  - apiGroups:
+      - gateway.networking.k8s.io
+    resources:
+      - gatewayclasses
+      - gateways
+      - httproutes
+      - grpcroutes
+      - tcproutes
+      - tlsroutes
+      - referencegrants
+      - backendtlspolicies
+    verbs:
+      - get
+      - list
+      - watch
+
+  # Gateway API resources - Status update permissions
+  # - Why: Traefik needs to report status back to Kubernetes
+  # - Behavior: Updates status.conditions and status.addresses fields
+  # - Example: Sets Gateway status to "Ready" when listeners are configured
+  # - Example: Reports which HTTPRoutes are accepted vs rejected
+  - apiGroups:
+      - gateway.networking.k8s.io
+    resources:
+      - gatewayclasses/status
+      - gateways/status
+      - httproutes/status
+      - grpcroutes/status
+      - tcproutes/status
+      - tlsroutes/status
+      - referencegrants/status
+      - backendtlspolicies/status
+    verbs:
+      - update
+
+---
+# ClusterRoleBinding - Connects ServiceAccount to ClusterRole
+# - What it does: Grants the "traefik-controller" ServiceAccount all permissions from "traefik-gateway-role"
+# - Scope: Cluster-wide (permissions apply to all namespaces)
+# - Result: When Traefik pod runs with this ServiceAccount, it can read Gateways/HTTPRoutes/Services
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: traefik-gateway-controller
+roleRef:
+  # Reference to the ClusterRole created above
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-gateway-role
+subjects:
+  # Reference to the ServiceAccount created above
+  # Important: Must specify namespace here since ClusterRoleBinding is cluster-scoped
+  - kind: ServiceAccount
+    name: traefik-controller
+    namespace: homelab

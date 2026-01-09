@@ -190,12 +190,21 @@
         cmd: kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.34.0/controller.yaml
       environment:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-        when: not k3s_binary.stat.exists
 
     - name: Wait for sealed-secrets-controller to be ready
       ansible.builtin.command:
         cmd: kubectl wait --for=condition=available --timeout=300s deployment/sealed-secrets-controller -n kube-system
       environment:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-      when: not k3s_binary.stat.exists
 
+    - name: Install Gateway API CRDs (v1.4.0)
+      ansible.builtin.command:
+        cmd: kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Wait for Gateway API CRDs to be established
+      ansible.builtin.command:
+        cmd: kubectl wait --for condition=established --timeout=60s crd/gateways.gateway.networking.k8s.io
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
