@@ -1,0 +1,68 @@
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/services/
+
+- System:
+    - Traefik:
+        icon: traefik.png
+        href: https://traefik-dev.gaborzeller.com
+        namespace: homelab
+        description: Reverse proxy
+        statusStyle: "dot"
+        ping: reverse-proxy
+        # ping: http://reverse-proxy:8080/api/overview
+        # widget:
+        #   type: traefik
+        #   url: https://traefik-dev.gaborzeller.com
+
+  # - Netdata:
+  #     icon: netdata.png
+  #     href: /netdata
+  #     description: Systems monitoring
+  #     statusStyle: "dot"
+  #     ping: netdata
+  #     widget:
+  #       type: netdata
+  #       url: http://netdata:19999
+
+  # - Glances:
+  #     icon: glances.png
+  #     href: /glances
+  #     description: System monitoring
+  #     statusStyle: "dot"
+  #     ping: glances
+  #
+  # - System:
+  #     href: /glances
+  #     widget:
+  #       type: glances
+  #       url: http://glances:61208/glances
+  #       version: 4 # required only if running glances v4 or higher, defaults to 3
+  #       metric: info
+  #       # chart: false
+  #
+  # - Containers:
+  #     href: /glances
+  #     widget:
+  #       type: glances
+  #       url: http://glances:61208/glances
+  #       version: 4 # required only if running glances v4 or higher, defaults to 3
+  #       metric: containers
+  #       # chart: false
+
+
+# - Work:
+#     - Nginx:
+#         icon: alexa.png
+#         href: /nginx
+#         description: To nginx
+#         statusStyle: "dot"
+#         ping: nginx
+#
+# - Personal:
+#     - Nginx:
+#         icon: alexa.png
+#         href: /nginx
+#         description: To nginx
+#         statusStyle: "dot"
+#         ping: nginx
+#

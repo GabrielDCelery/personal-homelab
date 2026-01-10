@@ -23,17 +23,32 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_route" "homelab_server" {
 
 locals {
   subdomain_map = {
-    dev  = "homelab-dev"
-    prod = "homelab"
+    dev = {
+      homepage = "homepage-dev"
+      traefik  = "traefik-dev"
+    }
+    prod = {
+      homepage = "homepage"
+      traefik  = "traefik"
+    }
   }
-  subdomain   = local.subdomain_map[var.environment]
-  full_domain = "${local.subdomain}.${var.cloudflare_zone_name}"
+  # subdomain   = local.subdomain_map[var.environment]
+  # full_domain = "${local.subdomain}.${var.cloudflare_zone_name}"
 }
 
 # Creates the CNAME record that routes homelab.${var.cloudflare_zone_name} to the tunnel.
 resource "cloudflare_dns_record" "http_app" {
   zone_id = var.cloudflare_zone_id
-  name    = local.subdomain
+  name    = local.subdomain_map[var.environment].homepage
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.homelab_tunnel.id}.cfargotunnel.com"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_dns_record" "http_traefik" {
+  zone_id = var.cloudflare_zone_id
+  name    = local.subdomain_map[var.environment].traefik
   content = "${cloudflare_zero_trust_tunnel_cloudflared.homelab_tunnel.id}.cfargotunnel.com"
   type    = "CNAME"
   ttl     = 1
@@ -48,8 +63,12 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "tunnel" {
   config = {
     ingress = [
       {
-        hostname = local.full_domain
-        service  = "http://reverse-proxy:8080"
+        hostname = "${local.subdomain_map[var.environment].homepage}.${var.cloudflare_zone_name}"
+        service  = "http://reverse-proxy:80"
+      },
+      {
+        hostname = "${local.subdomain_map[var.environment].traefik}.${var.cloudflare_zone_name}"
+        service  = "http://reverse-proxy:80"
       },
       {
         service = "http_status:404"
@@ -70,7 +89,7 @@ resource "cloudflare_zero_trust_access_application" "homelab" {
   type       = "self_hosted"
   destinations = [{
     type = "public"
-    uri  = local.full_domain
+    uri  = "*.${var.cloudflare_zone_name}"
   }]
   policies = [{
     id         = data.azurerm_automation_variable_string.cloudflare_policy_superadmin_with_warp.value

@@ -40,6 +40,7 @@ spec:
           # - Behavior: Kubernetes pulls this image and runs it
           image: traefik:v3.6
           args:
+            - --api=true
             # - What it does: Enables the Traefik web dashboard UI
             # - Behavior: Dashboard becomes available at /dashboard/ endpoint
             # - Access: By default on port 8080 (the API port)
@@ -53,7 +54,7 @@ spec:
             # - Behavior: Dashboard becomes accessible at /traefik/dashboard instead of /dashboard
             # - Source: https://doc.traefik.io/traefik/reference/install-configuration/api-dashboard/
             # - Note: No trailing slash (use /traefik not /traefik/)
-            - --api.basepath=/traefik
+            # - --api.basepath=/traefik
             # - What it does: Creates an entrypoint (listening port) named "web" on port 80
             # - Behavior: Traefik listens for HTTP traffic on port 80
             # - Routing: Routes and Ingresses can specify which entrypoint to use
@@ -70,6 +71,7 @@ spec:
             # - Permissions: Requires RBAC from 03-traefik-rbac.yaml
             # - Discovery: Reads Gateways/HTTPRoutes from Kubernetes API
             - --providers.kubernetesgateway=true
+            - --ping=true
           ports:
             # - name: Labels this port as "web" (just documentation)
             # - containerPort: Tells Kubernetes the container listens on port 80

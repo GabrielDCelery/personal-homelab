@@ -75,6 +75,16 @@ kubectl create secret generic cloudflare-tunnel-token \
     kubeseal -o yaml > ./kubernetes/01-cloudflare-tunnel-secret.yaml
 """
 
+[tasks."k8s:generate:dev"]
+description = "Creates kubernetes files"
+run = """
+kubectl create configmap homepage-config \
+    --from-file=kubernetes/configs/homepage/ \
+    --namespace homelab \
+    --dry-run=client \
+    -o yaml > kubernetes/04-homepage-configmap.yaml
+"""
+
 [tasks."k8s:deploy:dev"]
 description = "Deploy Kubernetes manifests to homelab cluster"
 run = """
