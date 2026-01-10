@@ -26,10 +26,12 @@ locals {
     dev = {
       homepage = "homepage-dev"
       traefik  = "traefik-dev"
+      # glances  = "glances-dev"
     }
     prod = {
       homepage = "homepage"
       traefik  = "traefik"
+      # glances  = "glances"
     }
   }
   # subdomain   = local.subdomain_map[var.environment]
@@ -55,6 +57,15 @@ resource "cloudflare_dns_record" "http_traefik" {
   proxied = true
 }
 
+# resource "cloudflare_dns_record" "http_glances" {
+#   zone_id = var.cloudflare_zone_id
+#   name    = local.subdomain_map[var.environment].glances
+#   content = "${cloudflare_zero_trust_tunnel_cloudflared.homelab_tunnel.id}.cfargotunnel.com"
+#   type    = "CNAME"
+#   ttl     = 1
+#   proxied = true
+# }
+
 # Rules on how the tunnel should route the traffic 
 # Zero Trust -> Network -> Connectors -> Right hand size three dots 'Configure' -> Published application routes
 resource "cloudflare_zero_trust_tunnel_cloudflared_config" "tunnel" {
@@ -70,6 +81,10 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "tunnel" {
         hostname = "${local.subdomain_map[var.environment].traefik}.${var.cloudflare_zone_name}"
         service  = "http://reverse-proxy:80"
       },
+      # {
+      #   hostname = "${local.subdomain_map[var.environment].glances}.${var.cloudflare_zone_name}"
+      #   service  = "http://reverse-proxy:80"
+      # },
       {
         service = "http_status:404"
       }
