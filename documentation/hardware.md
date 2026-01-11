@@ -23,4 +23,4 @@
 
 ## Mini-PC
 
-- GMKtec Mini PC Windows 11 Pro N97（beat N197/N150/N100）[Amazon](https://www.amazon.co.uk/dp/B0DCFKVSXG)
+- GMKtec Mini PC Windows 11 Pro N97（beat N197/N150/N100) [Amazon](https://www.amazon.co.uk/dp/B0DCFKVSXG)
