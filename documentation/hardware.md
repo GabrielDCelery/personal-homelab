@@ -23,7 +23,12 @@ Wanted to have a single place listing the hardwares that I bought and where I bo
   - 500 GB
   - PCIe 4.0
   - NVMe
+- Fanxiang 2.5" SATA SSD 1 TB [Ebay](https://www.ebay.co.uk/itm/364245399320)
+  - boutht 2x
 - Corsair CV550, CV Series, 80 PLUS Bronze Certified [Amazon](https://www.amazon.co.uk/dp/B07YVVNK6Y)
+- upHere 120mm Silent Fan [Amazon](https://www.amazon.co.uk/dp/B071G9SLLV)
+  - 3-pack fan
+- CB301DV2 Classic Midi PC Case, ATX [Amazon](https://www.amazon.co.uk/dp/B0C9V4X9Z8)
 
 ## Mini-PC
 
