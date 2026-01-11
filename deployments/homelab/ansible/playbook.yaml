@@ -5,7 +5,7 @@
   become: true
   vars:
     cloudflare_tunnel_token: "{{ lookup('env', 'CLOUDFLARE_TUNNEL_TOKEN') }}"
-    swap_file_size: "1.5G"
+    swap_file_size: "3G"
   tasks:
     # sudo stat /swapfile
     - name: Check if swap file exists
@@ -150,13 +150,13 @@
         group: root
         mode: '0755'
 
-    - name: Copy config files to remote machine
-      ansible.builtin.copy:
-        src: ../docker/configs/
-        dest: /opt/homelab/configs
-        owner: root
-        group: root
-        mode: '0644'
+    # - name: Copy config files to remote machine
+    #   ansible.builtin.copy:
+    #     src: ../docker/configs/
+    #     dest: /opt/homelab/configs
+    #     owner: root
+    #     group: root
+    #     mode: '0644'
 
     # Check if k3s is already installed
     - name: Check if k3s is installed
