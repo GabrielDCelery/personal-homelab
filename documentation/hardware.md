@@ -1,5 +1,9 @@
 # Homelab specifications
 
+## What is this document for?
+
+Wanted to have a single place listing the hardwares that I bought and where I bought them from in case I need to get a replacement or specifications.
+
 ## Routers and switches
 
 - GL.iNet GL-MT6000(Flint 2) WiFi 6 Router [Amazon](https://www.amazon.co.uk/dp/B0CP7S3117)
