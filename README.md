@@ -2,7 +2,9 @@
 
 This is the repository storing scripts, documentation and configuration details of my personal homelab.
 
-## Project structure
+## How to work with the repo
+
+Have [mise](https://mise.jdx.dev/) for dependency management
 
 ```sh
 /
