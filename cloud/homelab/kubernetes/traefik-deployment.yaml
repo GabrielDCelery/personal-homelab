@@ -1,0 +1,88 @@
+# Traefik Deployment
+apiVersion: apps/v1
+# - What it is: Declares this as a Kubernetes Deployment resource
+# - Behavior: Creates and manages pods; ensures desired number of replicas are running
+kind: Deployment
+metadata:
+  # - name: The deployment is named "traefik"
+  # - namespace: Lives in the "homelab" namespace
+  # - Behavior: All commands need -n homelab to access this deployment
+  name: traefik
+  namespace: homelab
+spec:
+  # - What it does: Run exactly 1 copy of the Traefik pod
+  # - Behavior: If the pod crashes, Kubernetes automatically creates a new one
+  # - Scale: Change to 2 or 3 for high availability
+  replicas: 1
+  selector:
+    # - What it does: Tells the Deployment which pods it manages
+    # - Behavior: Looks for pods with label app: traefik
+    # - Critical: This must match the labels in template.metadata.labels below
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      # - What it does: Defines the pod template and applies labels to created pods
+      # - Behavior: Every pod created gets the label app: traefik
+      # - Why important: Services use these labels to find pods to route traffic to
+      labels:
+        app: traefik
+    spec:
+      # - What it does: Assigns the traefik-controller ServiceAccount to this pod
+      # - Behavior: Pod inherits all RBAC permissions from 03-traefik-rbac.yaml
+      # - Why needed: Without this, pod runs as "default" ServiceAccount with no API access
+      # - Result: Traefik can now read Gateway/HTTPRoute resources
+      serviceAccountName: traefik-controller
+      containers:
+        - name: traefik
+          # - name: Container name within the pod (just for identification)
+          # - image: Uses Traefik version 3.6 from Docker Hub
+          # - Behavior: Kubernetes pulls this image and runs it
+          image: traefik:v3.6
+          args:
+            - --api=true
+            # - What it does: Enables the Traefik web dashboard UI
+            # - Behavior: Dashboard becomes available at /dashboard/ endpoint
+            # - Access: By default on port 8080 (the API port)
+            - --api.dashboard=true
+            # - What it does: Allows dashboard access without authentication
+            # - Behavior: Dashboard is publicly accessible (no username/password required)
+            # - Security: ⚠ Use only behind Cloudflare Access or similar protection
+            # - Production: Set to false and configure proper auth
+            - --api.insecure=true
+            # - What it does: Sets the base path for the dashboard
+            # - Behavior: Dashboard becomes accessible at /traefik/dashboard instead of /dashboard
+            # - Source: https://doc.traefik.io/traefik/reference/install-configuration/api-dashboard/
+            # - Note: No trailing slash (use /traefik not /traefik/)
+            # - --api.basepath=/traefik
+            # - What it does: Creates an entrypoint (listening port) named "web" on port 80
+            # - Behavior: Traefik listens for HTTP traffic on port 80
+            # - Routing: Routes and Ingresses can specify which entrypoint to use
+            # - Multiple entrypoints: You could add --entrypoints.websecure.address=:443 for HTTPS
+            - --entrypoints.web.address=:80
+            # - What it does: Sets log verbosity
+            # - Options: DEBUG (very verbose) → INFO (normal) → WARN → ERROR (minimal)
+            # - Behavior: Shows request routing, middleware application, errors
+            # - View logs: kubectl logs -n homelab deployment/traefik
+            - --log.level=INFO
+            # - What it does: Enables Gateway API provider (not Ingress/CRD)
+            # - Behavior: Traefik watches for Gateway and HTTPRoute resources
+            # - Why: Gateway API is the modern successor to Ingress (frozen in 2026)
+            # - Permissions: Requires RBAC from 03-traefik-rbac.yaml
+            # - Discovery: Reads Gateways/HTTPRoutes from Kubernetes API
+            - --providers.kubernetesgateway=true
+            - --ping=true
+          ports:
+            # - name: Labels this port as "web" (just documentation)
+            # - containerPort: Tells Kubernetes the container listens on port 80
+            # - Behavior: Kubernetes can route traffic to this port
+            # - Matches: The --entrypoints.web.address=:80 arg above
+            - name: web
+              containerPort: 80
+            # - name: Labels this port as "dashboard"
+            # - containerPort: Traefik's API/dashboard port
+            # - Behavior: Dashboard and API are accessible here
+            # - Default: Port 8080 is Traefik's built-in API port (can't change without config)
+            - name: dashboard
+              containerPort: 8080
+

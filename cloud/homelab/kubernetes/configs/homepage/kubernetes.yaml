@@ -1,0 +1,3 @@
+mode: cluster
+# https://gethomepage.dev/configs/kubernetes/#traefik-ingressroute-support
+gateway: true # enable gateway-api

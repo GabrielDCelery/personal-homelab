@@ -1,0 +1,24 @@
+# Service - Exposes Homepage within the cluster
+# - What it is: Creates a stable DNS name and IP for Homepage
+# - DNS name: homepage.homelab.svc.cluster.local (or just "homepage" within namespace)
+# - Behavior: HTTPRoute will reference this to route traffic
+# - Type: ClusterIP (internal only, HTTPRoute/Gateway provides external access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage
+  namespace: homelab
+spec:
+  type: ClusterIP
+  selector:
+    # - What it does: Routes traffic to pods with label app: homepage
+    # - Behavior: Finds the Homepage pod created by Deployment above
+    app: homepage
+  ports:
+    # - port: Service listens on port 3000
+    # - targetPort: Forwards to container port 3000
+    # - Behavior: http://homepage:3000 → Homepage pod port 3000
+    - name: http
+      port: 3000
+      targetPort: 3000
+
