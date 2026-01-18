@@ -1,0 +1,3 @@
+[defaults]
+private_key_file=~/.ssh/keyname
+remote_user=username

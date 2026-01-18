@@ -1,0 +1,78 @@
+- name: Install mise on homelab desktop
+  hosts: homelabdesktop
+  vars:
+    target_user: "{{ lookup('env', 'USER') }}"
+  tasks:
+    - name: Show current user info
+      ansible.builtin.debug:
+        msg: |
+          Current user: {{ ansible_facts.user_id }}
+          Current user home: {{ ansible_facts.user_dir }}
+          Effective user (with become): {{ ansible_facts.env.USER }}
+          SSH user: {{ ansible_facts.ssh_user | default(ansible_facts.user_id) }}
+
+    # sudo atp update && sudo apt install curl etc...
+    - name: Update apt cache and install dependencies
+      ansible.builtin.apt:
+        name:
+          - curl
+        state: present
+        update_cache: yes
+      become: true
+
+    # sudo install -dm 755 /etc/apt/keyrings
+    - name: Create keyrings directory
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+      become: true
+
+    # curl -fSs https://mise.jdx.dev/gpg-key.pub | sudo tee /etc/apt/keyrings/mise-archive-keyring.pub 1> /dev/null
+    - name: Download mise GPG key
+      ansible.builtin.get_url:
+        url: https://mise.jdx.dev/gpg-key.pub
+        dest: /etc/apt/keyrings/mise-archive-keyring.pub
+        mode: '0644'
+      become: true
+
+    # echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.pub arch=amd64] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list
+    - name: Add mise repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.pub arch=amd64] https://mise.jdx.dev/deb stable main"
+        state: present
+        filename: mise
+      become: true
+
+    # sudo apt update
+    - name: Update apt cache after adding repository
+      ansible.builtin.apt:
+        update_cache: yes
+      become: true
+
+    # sudo apt install -y mise
+    - name: Install mise
+      ansible.builtin.apt:
+        name: mise
+        state: present
+      become: true
+
+    - name: Add mise activation to bashrc
+      ansible.builtin.lineinfile:
+        path: "/home/{{ target_user }}/.bashrc"
+        line: 'eval "$(mise activate bash)"'
+        create: yes
+        state: present
+      become_user: "{{ target_user }}"
+
+    - name: Copy local config to remote
+      ansible.builtin.copy:
+        src: "files/"
+        dest: "/home/{{ target_user }}/"
+        owner: "{{ target_user }}"
+        group: "{{ target_user }}"
+      become_user: "{{ target_user }}"
+
+    - name: Install mise dependencies
+      ansible.builtin.shell: mise trust && mise activate && mise install
+      become_user: "{{ target_user }}"

@@ -1,0 +1,4 @@
+myhosts:
+  hosts:
+    homelabdesktop:
+      ansible_host: 10.83.16.99
