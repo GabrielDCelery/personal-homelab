@@ -170,3 +170,67 @@
         auto_remove: true
       become: true
 
+    # Docker doesn't have the NVIDIA Container Toolkit installed. You need to install it so Docker can access the GPU.
+
+    # curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+    - name: Download NVIDIA Container Toolkit GPG key
+      ansible.builtin.shell: |
+        curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+      args:
+        creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+      become: true
+
+    # curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    #   sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    #   sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+    - name: Add NVIDIA Container Toolkit repository
+      ansible.builtin.shell: |
+        curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+          sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' > /etc/apt/sources.list.d/nvidia-container-toolkit.list
+      args:
+        creates: /etc/apt/sources.list.d/nvidia-container-toolkit.list
+      become: true
+
+    # sudo apt update && sudo apt install nvidia-container-toolkit
+    - name: Update apt cache after adding NVIDIA repository
+      ansible.builtin.apt:
+        update_cache: yes
+      become: true
+
+    - name: Install NVIDIA Container Toolkit
+      ansible.builtin.apt:
+        name: nvidia-container-toolkit
+        state: present
+      become: true
+
+    # sudo nvidia-ctk runtime configure --runtime=docker
+    - name: Configure Docker to use NVIDIA runtime
+      ansible.builtin.command: nvidia-ctk runtime configure --runtime=docker
+      become: true
+
+    # sudo systemctl restart docker
+    - name: Restart Docker service
+      ansible.builtin.systemd:
+        name: docker
+        state: restarted
+      become: true
+
+  # # docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
+  # - name: Test GPU access in Docker
+  #   community.docker.docker_container:
+  #     name: nvidia-smi-test
+  #     image: nvidia/cuda:12.0-base
+  #     command: nvidia-smi
+  #     device_requests:
+  #       - driver: nvidia
+  #         count: -1
+  #         capabilities:
+  #           - ['gpu']
+  #     detach: false
+  #     auto_remove: true
+  #   become: true
+  #   register: nvidia_smi_result
+  #
+  # - name: Show nvidia-smi output
+  #   ansible.builtin.debug:
+  #     var: nvidia_smi_result
