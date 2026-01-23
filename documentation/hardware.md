@@ -28,6 +28,7 @@ Wanted to have a single place listing the hardwares that I bought and where I bo
 - upHere 120mm Silent Fan [Amazon](https://www.amazon.co.uk/dp/B071G9SLLV)
   - 3-pack fan
 - CB301DV2 Classic Midi PC Case, ATX [Amazon](https://www.amazon.co.uk/dp/B0C9V4X9Z8)
+- MSI Nvidia GeForce RTX3060 Ventus X2 12gb
 
 ## Mini-PC
 
