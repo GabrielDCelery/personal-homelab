@@ -1,0 +1,6 @@
+- name: Install GPU driver
+  ansible.builtin.apt:
+    name:
+      - nvidia-driver-580-open
+    state: present
+  become: true

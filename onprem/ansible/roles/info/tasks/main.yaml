@@ -1,0 +1,8 @@
+- name: Show current user info
+  ansible.builtin.debug:
+    msg: |
+      Current user: {{ ansible_facts.user_id }}
+      Current user home: {{ ansible_facts.user_dir }}
+      Effective user (with become): {{ ansible_facts.env.USER }}
+      SSH user: {{ ansible_facts.ssh_user | default(ansible_facts.user_id) }}
+
