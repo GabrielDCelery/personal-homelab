@@ -14,8 +14,43 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    restart: always
+    restart: unless-stopped
+
+  # following the guide on: https://learn.netdata.cloud/docs/netdata-agent/installation/docker
+  netdata:
+    image: netdata/netdata:v2.8
+    container_name: netdata
+    pid: host
+    network_mode: host
+    ports:
+      - "19999:19999"
+    volumes:
+      - netdataconfig:/etc/netdata
+      - netdatalib:/var/lib/netdata
+      - netdatacache:/var/cache/netdata
+      - /:/host/root:ro,rslave
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /var/log:/host/var/log:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /run/dbus:/run/dbus:ro
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    restart: unless-stopped
 
 volumes:
   ollama-models:
+    external: true
+  netdataconfig:
+    external: true
+  netdatalib:
+    external: true
+  netdatacache:
     external: true
