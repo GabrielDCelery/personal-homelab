@@ -7,6 +7,7 @@ services:
       - "11434:11434"
     volumes:
       - ollama-models:/root/.ollama
+    # https://docs.docker.com/compose/how-tos/gpu-support
     deploy:
       resources:
         reservations:
@@ -16,34 +17,28 @@ services:
               capabilities: [gpu]
     restart: unless-stopped
 
-  # following the guide on: https://learn.netdata.cloud/docs/netdata-agent/installation/docker
-  netdata:
-    image: netdata/netdata:v2.8
-    container_name: netdata
+  glances:
+    image: nicolargo/glances:ubuntu-4.4.1-full
+    container_name: glances
     pid: host
     network_mode: host
-    ports:
-      - "19999:19999"
+    # ports:
+    #   - "61208:61208"
     volumes:
-      - netdataconfig:/etc/netdata
-      - netdatalib:/var/lib/netdata
-      - netdatacache:/var/cache/netdata
-      - /:/host/root:ro,rslave
-      - /etc/passwd:/host/etc/passwd:ro
-      - /etc/group:/host/etc/group:ro
-      - /etc/localtime:/etc/localtime:ro
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /etc/os-release:/host/etc/os-release:ro
-      - /var/log:/host/var/log:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /run/dbus:/run/dbus:ro
-    cap_add:
-      - SYS_PTRACE
-      - SYS_ADMIN
-    security_opt:
-      - apparmor:unconfined
+    # https://docs.docker.com/compose/how-tos/gpu-support
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    environment:
+      - "GLANCES_OPT=-w"
     restart: unless-stopped
+
 
 volumes:
   ollama-models:
@@ -54,3 +49,6 @@ volumes:
     external: true
   netdatacache:
     external: true
+
+
+
