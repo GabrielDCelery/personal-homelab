@@ -1,11 +1,14 @@
 # Docker doesn't have the NVIDIA Container Toolkit installed. 
 # We need to install it so Docker can access the GPU
+# https://hub.docker.com/r/ollama/ollama
+# https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
 
 # sudo atp update && sudo apt install curl etc...
 - name: Update apt cache and install dependencies
   ansible.builtin.apt:
     name:
       - curl
+      - gnupg2
     state: present
     update_cache: yes
   become: true
@@ -37,7 +40,11 @@
 
 - name: Install NVIDIA Container Toolkit
   ansible.builtin.apt:
-    name: nvidia-container-toolkit
+    name:
+      - "nvidia-container-toolkit={{ nvidia_container_toolkit_version }}"
+      - "nvidia-container-toolkit-base={{ nvidia_container_toolkit_version }}"
+      - "libnvidia-container-tools={{ nvidia_container_toolkit_version }}"
+      - "libnvidia-container1={{ nvidia_container_toolkit_version }}"
     state: present
   become: true
 
