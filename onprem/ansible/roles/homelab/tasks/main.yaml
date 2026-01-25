@@ -3,17 +3,3 @@
     name: "ollama-models"
     state: present
 
-- name: Create volume for ollama
-  community.docker.docker_volume:
-    name: "netdataconfig"
-    state: present
-
-- name: Create volume for ollama
-  community.docker.docker_volume:
-    name: "netdatalib"
-    state: present
-
-- name: Create volume for ollama
-  community.docker.docker_volume:
-    name: "netdatacache"
-    state: present
