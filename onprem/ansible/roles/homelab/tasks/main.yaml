@@ -1,0 +1,4 @@
+- name: Create volume for ollama
+  community.docker.docker_volume:
+    name: "ollama-models"
+    state: present

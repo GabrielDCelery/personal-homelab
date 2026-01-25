@@ -13,17 +13,8 @@
       tags: nvidia_driver
     - role: nvidia_container_toolkit
       tags: nvidia_container_toolkit
-
-  tasks:
-    # sudo atp update && sudo apt install curl etc...
-    - name: Update apt cache and install core dependencies
-      ansible.builtin.apt:
-        name:
-          - curl
-          - btop
-        state: present
-        update_cache: yes
-      become: true
+    - role: homelab
+      tags: homelab
 
 
   # # docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi

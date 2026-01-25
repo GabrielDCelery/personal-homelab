@@ -1,0 +1,21 @@
+# docker run --rm -v ollama-models:/root/.ollama --gpus=all -p 11434:11434 --name ollama ollama/ollama:0.15.1
+services:
+  ollama:
+    image: ollama/ollama:0.15.1
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: always
+
+volumes:
+  ollama-models:
+    external: true
