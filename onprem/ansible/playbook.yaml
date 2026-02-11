@@ -15,6 +15,8 @@
       tags: nvidia_container_toolkit
     - role: homelab
       tags: homelab
+    - role: git
+      tags: git
 
 
   # # docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi

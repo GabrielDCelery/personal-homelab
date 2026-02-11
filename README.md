@@ -66,7 +66,11 @@ mise install
 
 # for runing ansible
 # create ansible.cfg using ansible.cfg.example
-cd ansible && ansible-playbook -i inventory.yaml playbook.yaml
+cd ansible
+ansible-playbook -i inventory.yaml playbook.yaml
+# to run tag specific
+ansible-playbook -i inventory.yaml playbook.yaml -t git
+
 
 # for running docker
 # create a docker context

@@ -1,0 +1,69 @@
+# sudo apt update
+- name: Update apt cache
+  ansible.builtin.apt:
+    pkg:
+      - git
+    state: present
+    update_cache: yes
+  become: true
+
+
+- name: Configure git user name
+  community.general.git_config:
+    name: user.name
+    value: "{{ git_user_name }}"
+    scope: global
+  when: git_user_name is defined
+
+- name: Configure git user email
+  community.general.git_config:
+    name: user.email
+    value: "{{ git_user_email }}"
+    scope: global
+  when: git_user_email is defined
+
+- name: Generate SSH key for git
+  ansible.builtin.user:
+    name: "{{ target_user }}"
+    generate_ssh_key: yes
+    ssh_key_type: ed25519
+    ssh_key_file: .ssh/id_ed25519
+    force: false
+  when: git_generate_ssh_key | default(true)
+
+- name: Read SSH public key
+  ansible.builtin.slurp:
+    src: "{{ ansible_facts.env.HOME }}/.ssh/id_ed25519.pub"
+  register: git_ssh_public_key
+  when: git_generate_ssh_key | default(true)
+
+
+- name: Display SSH public key
+  ansible.builtin.debug:
+    msg: "Add this SSH key to your git provider: {{ git_ssh_public_key.content | b64decode }}"
+  when:
+    - git_generate_ssh_key | default(true)
+    - git_ssh_public_key is defined
+
+
+- name: Configure SSH to use key for GitHub
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_facts.env.HOME }}/.ssh/config"
+    create: yes
+    mode: '0600'
+    marker: "# {mark} ANSIBLE MANAGED - GitHub"
+    block: |
+      Host github.com
+        HostName github.com
+        User git
+        IdentityFile ~/.ssh/id_ed25519
+        IdentitiesOnly yes
+  when: git_configure_ssh_config | default(true)
+
+- name: Add GitHub host key to known hosts
+  ansible.builtin.known_hosts:
+    path: "{{ ansible_facts.env.HOME }}/.ssh/known_hosts"
+    name: github.com
+    key: "{{ lookup('pipe', 'ssh-keyscan -t ed25519 github.com') }}"
+    state: present
+  when: git_configure_ssh_config | default(true)

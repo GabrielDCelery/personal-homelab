@@ -1,0 +1,5 @@
+# Uncomment and add values for overriding lower-level values
+# git_user_name: "undefined"
+# git_user_email: "undefined@example.com"
+# git_generate_ssh_key: true
+# git_configure_ssh_config: true
