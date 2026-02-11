@@ -63,7 +63,14 @@ mise run destroy:full:dev
 ```sh
 cd onprem
 mise install
-ansible-playbook -i ansible/inventory.yaml ansible/playbook.yaml
+
+# for runing ansible
+# create ansible.cfg using ansible.cfg.example
+cd ansible && ansible-playbook -i inventory.yaml playbook.yaml
+
+# for running docker
+# create a docker context
+docker context create homelab-onprem --docker "host=ssh://username@host"
 docker compose -f docker/compose.yaml up -d
 ```
 
