@@ -42,15 +42,15 @@ mise run deploy:full:dev              # Full deployment: Terraform -> Ansible ->
 
 This runs the following steps in order:
 
-| Task                     | What it does                                              |
-| ------------------------ | --------------------------------------------------------- |
-| `tf:init:dev`            | Initialize Terraform                                      |
-| `tf:apply:dev`           | Provision DigitalOcean droplet + Cloudflare tunnel        |
-| `ssh:prepare:dev`        | Fetch SSH key from Azure Key Vault                        |
-| `ansible:prepare:dev`    | Generate Ansible inventory from Terraform outputs         |
-| `ansible:deploy:dev`     | Configure server (k3s, packages)                          |
-| `k8s:prepare:dev`        | Fetch kubeconfig, seal Cloudflare tunnel secret            |
-| `k8s:deploy:dev`         | Apply all Kubernetes manifests                            |
+| Task                  | What it does                                       |
+| --------------------- | -------------------------------------------------- |
+| `tf:init:dev`         | Initialize Terraform                               |
+| `tf:apply:dev`        | Provision DigitalOcean droplet + Cloudflare tunnel |
+| `ssh:prepare:dev`     | Fetch SSH key from Azure Key Vault                 |
+| `ansible:prepare:dev` | Generate Ansible inventory from Terraform outputs  |
+| `ansible:deploy:dev`  | Configure server (k3s, packages)                   |
+| `k8s:prepare:dev`     | Fetch kubeconfig, seal Cloudflare tunnel secret    |
+| `k8s:deploy:dev`      | Apply all Kubernetes manifests                     |
 
 To tear everything down:
 
@@ -69,15 +69,15 @@ docker compose -f docker/compose.yaml up -d
 
 ## Services
 
-| Service     | Location | Description                          | Access                            |
-| ----------- | -------- | ------------------------------------ | --------------------------------- |
-| Homepage    | Cloud    | Dashboard for homelab services       | `homepage-dev.gaborzeller.com`    |
-| Traefik     | Cloud    | Reverse proxy / ingress controller   | `traefik-dev.gaborzeller.com`     |
-| Prometheus  | Cloud    | Metrics collection                   | In-cluster                        |
-| Grafana     | Cloud    | Metrics dashboards                   | In-cluster                        |
-| cloudflared | Cloud    | Cloudflare Zero Trust tunnel         | Internal                          |
-| Ollama      | On-prem  | LLM inference (GPU-accelerated)      | `localhost:11434`                 |
-| Glances     | On-prem  | System/GPU monitoring                | Host network                      |
+| Service     | Location | Description                        | Access                         |
+| ----------- | -------- | ---------------------------------- | ------------------------------ |
+| Homepage    | Cloud    | Dashboard for homelab services     | `homepage-dev.gaborzeller.com` |
+| Traefik     | Cloud    | Reverse proxy / ingress controller | `traefik-dev.gaborzeller.com`  |
+| Prometheus  | Cloud    | Metrics collection                 | In-cluster                     |
+| Grafana     | Cloud    | Metrics dashboards                 | In-cluster                     |
+| cloudflared | Cloud    | Cloudflare Zero Trust tunnel       | Internal                       |
+| Ollama      | On-prem  | LLM inference (GPU-accelerated)    | `localhost:11434`              |
+| Glances     | On-prem  | System/GPU monitoring              | Host network                   |
 
 ## Configuration
 
