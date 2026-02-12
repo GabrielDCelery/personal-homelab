@@ -3,3 +3,6 @@
     name: "ollama-models"
     state: present
 
+- name: Create a network
+  community.docker.docker_network:
+    name: ollama_net

@@ -8,6 +8,8 @@ services:
     volumes:
       - ollama-models:/root/.ollama
     # https://docs.docker.com/compose/how-tos/gpu-support
+    networks:
+      - ollama_net
     deploy:
       resources:
         reservations:
@@ -51,4 +53,7 @@ volumes:
     external: true
 
 
+networks:
+  ollama_net:
+    external: true
 
