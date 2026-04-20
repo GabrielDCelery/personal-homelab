@@ -87,6 +87,30 @@
     append: yes
   become: true
 
+# sudo tee /etc/docker/daemon.json << 'EOF'
+# {
+#   "insecure-registries": ["10.83.16.99:5000"]
+# }
+# EOF
+- name: Configure Docker daemon
+  ansible.builtin.copy:
+    content: |
+      {
+        "insecure-registries": ["{{ ansible_host }}:5000"]
+      }
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+# sudo systemctl restart docker
+- name: Restart Docker to apply daemon config
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+  become: true
+
 # Verify that the installation is successful by running the hello-world image
 - name: Run Docker hello-world container
   community.docker.docker_container:
