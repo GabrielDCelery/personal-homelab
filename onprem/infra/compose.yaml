@@ -1,0 +1,54 @@
+services:
+  registry:
+    image: registry:3.1.0
+    container_name: container-registry
+    restart: unless-stopped
+    networks:
+      - homelab
+    ports:
+      - "5000:5000"
+    volumes:
+      - /srv/registry:/var/lib/registry
+    environment:
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+
+  registry-ui:
+    image: joxit/docker-registry-ui:2.6.0
+    container_name: container-registry-ui
+    restart: unless-stopped
+    networks:
+      - homelab
+    ports:
+      - "5001:80"
+    environment:
+      - SINGLE_REGISTRY=true
+      - REGISTRY_URL=http://registry:5000
+      - DELETE_IMAGES=true
+    depends_on:
+      - registry
+
+  glances:
+    image: nicolargo/glances:ubuntu-4.4.1-full
+    container_name: glances
+    pid: host
+    network_mode: host
+    # ports:
+    #   - "61208:61208"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    # https://docs.docker.com/compose/how-tos/gpu-support
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    environment:
+      - "GLANCES_OPT=-w"
+    restart: unless-stopped
+
+networks:
+  homelab:
+    external: true

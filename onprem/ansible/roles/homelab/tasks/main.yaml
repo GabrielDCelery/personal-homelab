@@ -1,8 +1,3 @@
-- name: Create volume for ollama
-  community.docker.docker_volume:
-    name: "ollama-models"
-    state: present
-
-- name: Create a network
+- name: Create homelab network
   community.docker.docker_network:
-    name: ollama_net
+    name: homelab

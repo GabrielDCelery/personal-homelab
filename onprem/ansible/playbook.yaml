@@ -5,8 +5,9 @@
   roles:
     - role: info
       tags: info
-    - role: mise
-      tags: mise
+    # No need to install mise because it is unnecessary overhead, installing everything using docker
+    # - role: mise
+    #   tags: mise
     - role: docker
       tags: docker
     - role: nvidia_driver
@@ -17,7 +18,12 @@
       tags: homelab
     - role: git
       tags: git
-
+    - role: registry
+      tags: registry
+    - role: ollama
+      tags: ollama
+    - role: shadowrun-rag
+      tags: shadowrun-rag
 
   # # docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
   # - name: Test GPU access in Docker

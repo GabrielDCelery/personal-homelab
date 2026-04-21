@@ -1,0 +1,56 @@
+services:
+  ollama:
+    image: ollama/ollama:0.15.1
+    container_name: ollama
+    restart: unless-stopped
+    networks:
+      - homelab
+    ports:
+      - "11434:11434"
+    volumes:
+      - /srv/ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  shadowrun-rag:
+    image: ${REGISTRY_HOST}/homelab/shadowrun-rag:latest
+    container_name: shadowrun-rag
+    restart: unless-stopped
+    environment:
+      - DATA_PATH=/data
+      - EMBEDDING_BATCH_SIZE=100
+      - EMBEDDING_MODEL=mxbai-embed-large
+      - LLM_MODEL=llama3.1:8b
+      - LOG_LEVEL=INFO
+      - OLLAMA_HOST=http://ollama:11434
+      - PYTORCH_ALLOC_CONF=expandable_segments:True
+      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+      - TOP_K=7
+    volumes:
+      - /srv/shadowrun-rag/pdfs:/data/pdfs:ro
+      - /srv/shadowrun-rag/extracted:/data/extracted
+      - /srv/shadowrun-rag/chroma_db:/data/chroma_db
+      - /srv/shadowrun-rag/model_cache:/root/.cache
+    networks:
+      - homelab
+    depends_on:
+      - ollama
+    # Override command to keep running for manual exec
+    command: tail -f /dev/null
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+
+networks:
+  homelab:
+    external: true

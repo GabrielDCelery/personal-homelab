@@ -1,0 +1,14 @@
+- name: Create shadowrun-rag directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: '0755'
+  loop:
+    - /srv/shadowrun-rag
+    - /srv/shadowrun-rag/pdfs
+    - /srv/shadowrun-rag/extracted
+    - /srv/shadowrun-rag/chroma_db
+    - /srv/shadowrun-rag/model_cache
+  become: true

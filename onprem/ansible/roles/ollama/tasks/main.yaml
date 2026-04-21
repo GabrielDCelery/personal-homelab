@@ -1,0 +1,11 @@
+# sudo mkdir -p /srv/ollama
+# sudo chmod 0755 /srv/ollama
+# sudo chown target_user:target_user /srv/ollama
+- name: Create ollama data directory
+  ansible.builtin.file:
+    path: /srv/ollama
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true

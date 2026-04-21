@@ -1,0 +1,11 @@
+# sudo mkdir -p /srv/registry
+# sudo chmod 0755 /srv/registry
+# sudo chown root:root /srv/registry
+- name: Create registry data directory
+  ansible.builtin.file:
+    path: /srv/registry
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
