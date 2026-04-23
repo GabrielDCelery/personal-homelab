@@ -2,4 +2,24 @@
 ansible = "13.2.0"
 
 [env]
-_.file = { path = ".env" }
+_.file = { path = "{{config_root}}/.env" }
+
+[tasks."ansible:deploy"]
+dir = "{{config_root}}/ansible"
+run = "ansible-playbook -i inventory.yaml playbook.yaml"
+
+[tasks.bootstrap]
+description = "Bootstrap dev environment"
+run = """
+docker context update homelab --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_HOST\" 2>/dev/null || \
+docker context create homelab --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_HOST\"
+docker context use homelab
+"""
+
+[tasks."docker:deploy:infra"]
+dir = "{{ config_root }}/infra"
+run = "docker compose up -d"
+
+[tasks."docker:deploy:services"]
+dir = "{{ config_root }}/services"
+run = "docker compose up -d"

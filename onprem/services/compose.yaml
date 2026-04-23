@@ -18,8 +18,8 @@ services:
               capabilities: [gpu]
 
   shadowrun-rag:
-    image: ${REGISTRY_HOST}/homelab/shadowrun-rag:latest
-    user: "${PUID}:${PGID}"
+    image: ${HOMELAB_HOST}:5000/homelab/shadowrun-rag:latest
+    user: "${HOMELAB_PUID}:${HOMELAB_PGID}"
     container_name: shadowrun-rag
     restart: unless-stopped
     environment:
@@ -36,7 +36,7 @@ services:
       - /srv/shadowrun-rag/pdfs:/data/pdfs:ro
       - /srv/shadowrun-rag/extracted:/data/extracted
       - /srv/shadowrun-rag/chroma_db:/data/chroma_db
-      - /srv/shadowrun-rag/model_cache:/${USER}/.cache
+      - /srv/shadowrun-rag/model_cache:/${HOMELAB_USER}/.cache
     networks:
       - homelab
     depends_on:
@@ -52,7 +52,7 @@ services:
               capabilities: [gpu]
   filebrowser:
     image: hurlenko/filebrowser:v2.63.2
-    user: "${PUID}:${PGID}"
+    user: "${HOMELAB_PUID}:${HOMELAB_PGID}"
     container_name: filebrowser
     restart: unless-stopped
     ports:

@@ -1,7 +1,7 @@
 - name: Set up homelab
   hosts: homelabdesktop
   vars:
-    target_user: "{{ lookup('env', 'REMOTE_USER') }}"
+    target_user: "{{ lookup('env', 'HOMELAB_USER') }}"
   roles:
     - role: info
       tags: info

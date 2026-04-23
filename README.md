@@ -22,22 +22,43 @@ archive/cloud/              # Archived cloud deployment (DigitalOcean + k3s)
 
 Prerequisites: [mise](https://mise.jdx.dev/).
 
-### On-prem (Desktop)
+1. Generate SSH key and copy to homelab:
 
 ```sh
-cd onprem
-mise install
+ssh-keygen -t ed25519 -f ~/.ssh/homelab_admin -C "homelab"
+ssh-copy-id -i ~/.ssh/homelab_admin.pub <homelab-username>@<homelab-ip>
+```
 
-# for runing ansible
-# create ansible.cfg using ansible.cfg.example
-cd ansible
-ansible-playbook -i inventory.yaml playbook.yaml
-# to run tag specific
-ansible-playbook -i inventory.yaml playbook.yaml -t git
+2. Add to `~/.ssh/config`:
 
+```
+Host homelabdesktop
+  HostName <homelab-ip>
+  User gaze
+  IdentityFile ~/.ssh/homelab_admin
+```
 
-# for running docker
-# create a docker context
-docker context create homelab-onprem --docker "host=ssh://username@host"
-docker compose -f docker/compose.yaml up -d
+3. Copy `.env.example` to `.env` and fill in values:
+
+```sh
+cp onprem/.env.example onprem/.env
+```
+
+4. Run `mise run bootstrap`
+
+### On-prem (Desktop)
+
+All tasks are run from `onprem/` via mise:
+
+| Task                              | Description                       |
+| --------------------------------- | --------------------------------- |
+| `mise run bootstrap`              | Create Docker context for homelab |
+| `mise run ansible:deploy`         | Run full Ansible playbook         |
+| `mise run docker:deploy:infra`    | Deploy infra compose stack        |
+| `mise run docker:deploy:services` | Deploy services compose stack     |
+
+For Ansible tag-specific deploys:
+
+```sh
+mise run ansible:deploy -- -t git
 ```
