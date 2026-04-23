@@ -20,16 +20,31 @@ archive/cloud/              # Archived cloud deployment (DigitalOcean + k3s)
 
 ## Quick Start
 
-Prerequisites: [mise](https://mise.jdx.dev/).
+Prerequisites:
 
-1. Generate SSH key and copy to homelab:
+- [mise](https://mise.jdx.dev/)
+- [age](https://github.com/FiloSottile/age)
+- [sops](https://github.com/getsops/sops).
+
+1. Generate age key for secrets decryption (once per machine):
+
+```sh
+mkdir -p ~/.age
+# note the public key after generating the homelab.txt
+age-keygen -o ~/.age/homelab.txt
+chmod 600 ~/.age/homelab.txt
+```
+
+See [secret management](documentation/secret-management.md) for how to encrypt, edit, and use secrets.
+
+2. Generate SSH key and copy to homelab:
 
 ```sh
 ssh-keygen -t ed25519 -f ~/.ssh/homelab_admin -C "homelab"
 ssh-copy-id -i ~/.ssh/homelab_admin.pub <homelab-username>@<homelab-ip>
 ```
 
-2. Add to `~/.ssh/config`:
+3. Add to `~/.ssh/config`:
 
 ```
 Host homelabdesktop
@@ -38,13 +53,13 @@ Host homelabdesktop
   IdentityFile ~/.ssh/homelab_admin
 ```
 
-3. Copy `.env.example` to `.env` and fill in values:
+4. Copy `.env.example` to `.env` and fill in values:
 
 ```sh
 cp onprem/.env.example onprem/.env
 ```
 
-4. Run `mise run bootstrap`
+5. Run `cd onprem && mise run bootstrap`
 
 ### On-prem (Desktop)
 

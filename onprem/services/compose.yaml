@@ -51,18 +51,28 @@ services:
               count: all
               capabilities: [gpu]
   filebrowser:
-    image: hurlenko/filebrowser:v2.63.2
-    user: "${HOMELAB_PUID}:${HOMELAB_PGID}"
+    image: filebrowser/filebrowser:v2.63.2-s6
     container_name: filebrowser
     restart: unless-stopped
+    environment:
+      - PUID=${HOMELAB_PUID}
+      - PGID=${HOMELAB_PGID}
     ports:
-      - "8080:8080"
+      - "8080:80"
     volumes:
-      - /srv/shadowrun-rag/pdfs:/data/shadowrun-rag
-      # - /srv/filebrowser/database.db:/database.db
+      - /srv/shadowrun-rag/pdfs:/srv/shadowrun-rag
+      - filebrowser_data:/srv
+      - filebrowser_database:/database
+      - filebrowser_config:/config
     networks:
       - homelab
 
 networks:
   homelab:
     external: true
+
+
+volumes:
+  filebrowser_data:
+  filebrowser_database:
+  filebrowser_config:

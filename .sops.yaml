@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: onprem/secrets\.yaml$
+    age: age1wtnkqfnzk69duer4yqpvkrx0geggz8e9tuyjfaf73mfmsgsdtpzs2v5mte
