@@ -34,7 +34,7 @@ services:
     volumes:
       - /srv/shadowrun-rag/pdfs_raw:/data/pdfs_raw:ro
       - /srv/shadowrun-rag/pdfs_normalised:/data/pdfs_normalised
-      - /srv/shadowrun-rag/markdown:/data/markdown
+      - /srv/shadowrun-rag/markdown_extracted:/data/markdown_extracted
       - /srv/shadowrun-rag/chroma_db:/data/chroma_db
       - /srv/shadowrun-rag/model_cache:/home/app/.cache
     networks:
@@ -62,7 +62,8 @@ services:
     volumes:
       - /srv/shadowrun-rag/pdfs_raw:/srv/shadowrun-rag/pdfs_raw
       - /srv/shadowrun-rag/pdfs_normalised:/srv/shadowrun-rag/pdfs_normalised:ro
-      - /srv/shadowrun-rag/markdown:/srv/shadowrun-rag/markdown:ro
+      - /srv/shadowrun-rag/markdown_extracted:/srv/shadowrun-rag/markdown_extracted:ro
+      - /srv/shadowrun-rag/markdown_clean:/srv/shadowrun-rag/markdown_clean:ro
       - filebrowser_data:/srv
       - filebrowser_database:/database
       - filebrowser_config:/config
