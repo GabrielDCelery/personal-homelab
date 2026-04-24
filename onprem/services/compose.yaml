@@ -35,6 +35,7 @@ services:
       - /srv/shadowrun-rag/pdfs_raw:/data/pdfs_raw:ro
       - /srv/shadowrun-rag/pdfs_normalised:/data/pdfs_normalised
       - /srv/shadowrun-rag/markdown_extracted:/data/markdown_extracted
+      - /srv/shadowrun-rag/markdown_clean:/data/markdown_clean
       - /srv/shadowrun-rag/chroma_db:/data/chroma_db
       - /srv/shadowrun-rag/model_cache:/home/app/.cache
     networks:
