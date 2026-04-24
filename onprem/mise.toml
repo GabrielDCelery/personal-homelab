@@ -18,8 +18,14 @@ docker context use homelab
 
 [tasks."docker:deploy:infra"]
 dir = "{{ config_root }}/infra"
-run = "docker compose up -d"
+run = """
+docker compose pull
+docker compose up -d
+"""
 
 [tasks."docker:deploy:services"]
 dir = "{{ config_root }}/services"
-run = "docker compose up -d"
+run = """
+docker compose pull
+docker compose up -d
+"""
