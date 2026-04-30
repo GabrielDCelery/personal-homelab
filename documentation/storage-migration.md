@@ -10,6 +10,42 @@ Steps for migrating data between drives on the homelab desktop server.
 - **SATA SSD 1 (1TB)** — `/srv` (all service data)
 - **SATA SSD 2 (1TB)** — backups of `/srv`
 
+## Discovering storage devices
+
+Before starting, identify what devices are available and how they are currently used.
+
+**List all block devices with filesystem and mount info:**
+
+```sh
+lsblk -o NAME,SIZE,TYPE,FSTYPE,UUID,MOUNTPOINT
+```
+
+**Check disk usage on mounted filesystems:**
+
+```sh
+df -h
+```
+
+**Get hardware detail (model, serial, interface type):**
+
+```sh
+sudo lshw -class disk -short
+```
+
+**Check current fstab (what mounts automatically on boot):**
+
+```sh
+cat /etc/fstab
+```
+
+**Identify a device's UUID (needed for fstab entries):**
+
+```sh
+sudo blkid /dev/sda
+```
+
+In the output of `lsblk`, devices with no `FSTYPE` and no `MOUNTPOINT` are unformatted and unmounted — ready to be set up.
+
 ## Migrating /srv to a SATA SSD
 
 ### 1. Format the drive
