@@ -26,6 +26,10 @@ services:
       - EMBEDDING_BATCH_SIZE=100
       - EMBEDDING_MODEL=mxbai-embed-large
       - LLM_MODEL=llama3.1:8b
+      # - LLM_MODEL=gemma2:9b
+      # - LLM_MODEL=mistral:7b-instruct
+      - JUDGE_MODEL=mistral:7b-instruct
+      # - JUDGE_MODEL=llama3.1:8b
       - LOG_LEVEL=INFO
       - OLLAMA_HOST=http://ollama:11434
       - PYTORCH_ALLOC_CONF=expandable_segments:True
@@ -36,6 +40,8 @@ services:
       - /srv/shadowrun-rag/pdfs_normalised:/data/pdfs_normalised
       - /srv/shadowrun-rag/markdown_extracted:/data/markdown_extracted
       - /srv/shadowrun-rag/markdown_clean:/data/markdown_clean
+      - /srv/shadowrun-rag/markdown_stripped:/data/markdown_stripped
+      - /srv/shadowrun-rag/evals:/data/evals
       - /srv/shadowrun-rag/chroma_db:/data/chroma_db
       - /srv/shadowrun-rag/model_cache:/home/app/.cache
     networks:
@@ -65,6 +71,8 @@ services:
       - /srv/shadowrun-rag/pdfs_normalised:/srv/shadowrun-rag/pdfs_normalised:ro
       - /srv/shadowrun-rag/markdown_extracted:/srv/shadowrun-rag/markdown_extracted:ro
       - /srv/shadowrun-rag/markdown_clean:/srv/shadowrun-rag/markdown_clean:ro
+      - /srv/shadowrun-rag/markdown_stripped:/srv/shadowrun-rag/markdown_stripped:ro
+      - /srv/shadowrun-rag/evals:/srv/shadowrun-rag/evals:ro
       - filebrowser_data:/srv
       - filebrowser_database:/database
       - filebrowser_config:/config

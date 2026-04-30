@@ -11,6 +11,8 @@
     - /srv/shadowrun-rag/pdfs_normalised
     - /srv/shadowrun-rag/markdown_extracted
     - /srv/shadowrun-rag/markdown_clean
+    - /srv/shadowrun-rag/markdown_stripped
+    - /srv/shadowrun-rag/evals
     - /srv/shadowrun-rag/chroma_db
     - /srv/shadowrun-rag/model_cache
   become: true
