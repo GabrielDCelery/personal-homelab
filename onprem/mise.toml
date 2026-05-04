@@ -6,7 +6,15 @@ _.file = { path = "{{config_root}}/.env" }
 
 [tasks."ansible:deploy"]
 dir = "{{config_root}}/ansible"
-run = "ansible-playbook -i inventory.yaml playbook.yaml"
+usage = 'arg "[tags]" help="Ansible tags to run (optional)"'
+run = '''
+#!/usr/bin/env bash
+if [[ -n "${usage_tags:-}" ]]; then
+  ansible-playbook -i inventory.yaml playbook.yaml --tags "$usage_tags"
+else
+  ansible-playbook -i inventory.yaml playbook.yaml
+fi
+'''
 
 [tasks.bootstrap]
 description = "Bootstrap dev environment"

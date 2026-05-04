@@ -49,6 +49,17 @@ services:
       - "GLANCES_OPT=-w"
     restart: unless-stopped
 
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    ports:
+      - "8181:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - homelab
+
 networks:
   homelab:
     external: true

@@ -57,6 +57,37 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+  comfyui:
+    image: yanwk/comfyui-boot:cu128-slim
+    container_name: comfyui
+    restart: unless-stopped
+    ports:
+      - "8188:8188"
+    volumes:
+      - /srv/comfyui/cache/dot-cache:/root/.cache
+      - /srv/comfyui/cache/dot-config:/root/.config
+      - /srv/comfyui/nodes/dot-local:/root/.local
+      - /srv/comfyui/nodes/custom_nodes:/root/ComfyUI/custom_nodes
+      - /srv/comfyui/models/models:/root/ComfyUI/models
+      - /srv/comfyui/models/hf-hub:/root/.cache/huggingface/hub
+      - /srv/comfyui/models/torch-hub:/root/.cache/torch/hub
+      - /srv/comfyui/user/input:/root/ComfyUI/input
+      - /srv/comfyui/user/output:/root/ComfyUI/output
+      - /srv/comfyui/user/user-profile:/root/ComfyUI/user
+      - /srv/comfyui/user/user-scripts:/root/user-scripts
+    environment:
+      - CLI_ARGS=
+    networks:
+      - homelab
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
   filebrowser:
     image: filebrowser/filebrowser:v2.63.2-s6
     container_name: filebrowser
@@ -76,6 +107,7 @@ services:
       - filebrowser_data:/srv
       - filebrowser_database:/database
       - filebrowser_config:/config
+      - /srv/comfyui/user/output:/srv/comfyui/user/output:ro
     networks:
       - homelab
 

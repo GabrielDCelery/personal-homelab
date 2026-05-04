@@ -1,0 +1,21 @@
+- name: Create comfyui directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - /srv/comfyui
+    - /srv/comfyui/cache/dot-cache
+    - /srv/comfyui/cache/dot-config
+    - /srv/comfyui/models/hf-hub
+    - /srv/comfyui/models/models
+    - /srv/comfyui/models/torch-hub
+    - /srv/comfyui/nodes/custom_nodes
+    - /srv/comfyui/nodes/dot-local
+    - /srv/comfyui/user/input
+    - /srv/comfyui/user/output
+    - /srv/comfyui/user/user-profile
+    - /srv/comfyui/user/user-scripts
+  become: true
