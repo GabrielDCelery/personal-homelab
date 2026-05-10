@@ -30,6 +30,23 @@ Wanted to have a single place listing the hardwares that I bought and where I bo
 - CB301DV2 Classic Midi PC Case, ATX [Amazon](https://www.amazon.co.uk/dp/B0C9V4X9Z8)
 - MSI Nvidia GeForce RTX3060 Ventus X2 12gb
 
+## Future improvements
+
+### Desktop server
+
+#### RAM — 16GB → 32GB (recommended, do soon)
+
+Add 2x8GB DDR4 sticks in the two empty DIMM slots on the B450M-A II. DDR4 8GB sticks are ~£15-20 each (~£30-40 total). Running Ollama + ComfyUI + ChromaDB + Docker containers simultaneously puts pressure on 16GB. No PSU impact, no compatibility concerns.
+
+#### GPU — only worth upgrading with a meaningful discount or as part of a full overhaul
+
+Current RTX 3060 12GB is not blocking any current workloads. Upgrading only makes sense if a 16GB card appears significantly under market price, or as part of a full system overhaul (new PSU + CPU + GPU together).
+
+**Within current 550W PSU (max ~300W GPU TDP):**
+
+- RTX 4070 Ti Super (16GB GDDR6X, 285W) — best option; 16GB unlocks 13B models and larger SD models in ComfyUI; refurbished market currently not meaningfully cheaper than new (~£650)
+- RTX 5070 Ti (16GB GDDR7, ~300W) — newer architecture, fits but tight on PSU
+
 ## Mini-PC
 
 - GMKtec Mini PC Windows 11 Pro N97（beat N197/N150/N100) [Amazon](https://www.amazon.co.uk/dp/B0DCFKVSXG)
