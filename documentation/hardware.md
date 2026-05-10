@@ -40,12 +40,34 @@ Add 2x8GB DDR4 sticks in the two empty DIMM slots on the B450M-A II. DDR4 8GB st
 
 #### GPU — only worth upgrading with a meaningful discount or as part of a full overhaul
 
-Current RTX 3060 12GB is not blocking any current workloads. Upgrading only makes sense if a 16GB card appears significantly under market price, or as part of a full system overhaul (new PSU + CPU + GPU together).
+Current RTX 3060 12GB is not blocking any current workloads. Upgrading only makes sense if a 16GB card appears significantly under market price, or as part of a full system overhaul (new PSU + CPU + GPU together). CPU (Ryzen 3 3200G) is not a bottleneck for these workloads — LLM inference and ComfyUI are GPU-bound.
 
-**Within current 550W PSU (max ~300W GPU TDP):**
+**System power draw (non-GPU components):**
 
-- RTX 4070 Ti Super (16GB GDDR6X, 285W) — best option; 16GB unlocks 13B models and larger SD models in ComfyUI; refurbished market currently not meaningfully cheaper than new (~£650)
-- RTX 5070 Ti (16GB GDDR7, ~300W) — newer architecture, fits but tight on PSU
+| Component             | Draw      |
+| --------------------- | --------- |
+| Ryzen 3 3200G         | 65W       |
+| M.2 NVMe 500GB        | ~5W       |
+| 2x SATA SSD 1TB       | ~5W       |
+| 16GB DDR4 RAM         | ~4W       |
+| Motherboard           | ~20W      |
+| 3x 120mm fans         | ~4W       |
+| **Non-GPU total**     | **~103W** |
+| PSU capacity          | 550W      |
+| **Available for GPU** | **~447W** |
+
+**GPU options (verify current prices on eBay/CEX before buying):**
+
+| GPU                | VRAM        | TDP  | Total draw | PSU headroom | Max worth paying |
+| ------------------ | ----------- | ---- | ---------- | ------------ | ---------------- |
+| RTX 3060 (current) | 12GB GDDR6  | 170W | 273W       | 277W         | —                |
+| RTX 4070 Ti Super  | 16GB GDDR6X | 285W | 388W       | 162W         | ~£450 used       |
+| RTX 5070 Ti        | 16GB GDDR7  | 300W | 403W       | 147W         | ~£500 used       |
+| RTX 4080 Super     | 16GB GDDR6X | 320W | 423W       | 127W         | ~£600 used       |
+| RTX 3090           | 24GB GDDR6X | 350W | 453W       | 97W ⚠️       | ~£400 used       |
+
+> [!WARNING]
+> RTX 3090 runs the CV550 at ~82% sustained load. Technically within spec but not ideal for an 80+ Bronze PSU long-term. Selling the current RTX 3060 (~£150-170) offsets the cost of any of these.
 
 ## Mini-PC
 
