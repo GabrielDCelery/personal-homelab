@@ -50,7 +50,7 @@ services:
     restart: unless-stopped
 
   dozzle:
-    image: amir20/dozzle:latest
+    image: amir20/dozzle:pr-4726
     container_name: dozzle
     restart: unless-stopped
     ports:

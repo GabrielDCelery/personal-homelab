@@ -59,7 +59,7 @@ services:
               capabilities: [gpu]
 
   comfyui:
-    image: yanwk/comfyui-boot:cu128-slim
+    image: yanwk/comfyui-boot:cu130-slim-v2-20260521
     container_name: comfyui
     restart: unless-stopped
     ports:
