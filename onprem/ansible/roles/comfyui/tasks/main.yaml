@@ -11,6 +11,7 @@
     - /srv/comfyui/cache/dot-config
     - /srv/comfyui/models/hf-hub
     - /srv/comfyui/models/models
+    - /srv/comfyui/models/models/animatediff_models
     - /srv/comfyui/models/torch-hub
     - /srv/comfyui/nodes/custom_nodes
     - /srv/comfyui/nodes/dot-local

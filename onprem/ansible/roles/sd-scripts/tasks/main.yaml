@@ -1,0 +1,14 @@
+- name: Create sd-scripts directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - /srv/sd-scripts
+    - /srv/sd-scripts/dataset
+    - /srv/sd-scripts/output
+    - /srv/sd-scripts/logs
+    - /srv/sd-scripts/model_cache
+  become: true
