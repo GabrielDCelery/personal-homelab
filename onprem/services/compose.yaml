@@ -88,6 +88,33 @@ services:
               count: all
               capabilities: [gpu]
 
+  sd-scripts:
+    image: ${HOMELAB_HOST}:5000/homelab/sd-scripts:latest
+    container_name: sd-scripts
+    restart: unless-stopped
+    environment:
+      - PYTORCH_ALLOC_CONF=expandable_segments:True
+      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+      - HF_HOME=/root/.cache/huggingface
+    volumes:
+      - /srv/sd-scripts/artifacts:/data/artifacts
+      - /srv/sd-scripts/dataset:/data/dataset
+      - /srv/sd-scripts/output:/data/output
+      - /srv/sd-scripts/logs:/data/logs
+      - /srv/sd-scripts/model_cache:/root/.cache
+      - /srv/comfyui/models/models/checkpoints:/data/checkpoints:ro
+    networks:
+      - homelab
+    # Override command to keep running for manual exec (training is a one-off job, not a server)
+    command: tail -f /dev/null
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
   filebrowser:
     image: filebrowser/filebrowser:v2.63.2-s6
     container_name: filebrowser
