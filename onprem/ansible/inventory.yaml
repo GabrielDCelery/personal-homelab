@@ -1,3 +1,7 @@
-myhosts:
+gpu_hosts:
   hosts:
     homelabdesktop:
+
+infra_hosts:
+  hosts:
+    homelabnuc:

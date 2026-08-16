@@ -1,23 +1,26 @@
-- name: Set up homelab
-  hosts: homelabdesktop
+- name: Baseline setup
+  hosts: all
   vars:
     target_user: "{{ lookup('env', 'HOMELAB_USER') }}"
   roles:
     - role: info
       tags: info
-    # No need to install mise because it is unnecessary overhead, installing everything using docker
-    # - role: mise
-    #   tags: mise
     - role: docker
       tags: docker
+    - role: git
+      tags: git
+    - role: homelab
+      tags: homelab
+
+- name: Set up GPU workloads
+  hosts: gpu_hosts
+  vars:
+    target_user: "{{ lookup('env', 'HOMELAB_USER') }}"
+  roles:
     - role: nvidia_driver
       tags: nvidia_driver
     - role: nvidia_container_toolkit
       tags: nvidia_container_toolkit
-    - role: homelab
-      tags: homelab
-    - role: git
-      tags: git
     - role: registry
       tags: registry
     - role: ollama
@@ -28,6 +31,13 @@
       tags: comfyui
     - role: sd-scripts
       tags: sd-scripts
+
+- name: Set up shared infra
+  hosts: infra_hosts
+  vars:
+    target_user: "{{ lookup('env', 'HOMELAB_USER') }}"
+  roles: []
+  # dns, traefik, registry, infisical roles land here in Phase 2
 
   # # docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
   # - name: Test GPU access in Docker
