@@ -3,6 +3,8 @@ services:
     image: technitium/dns-server:14.3.0
     container_name: technitium-dns
     restart: unless-stopped
+    environment:
+      - DNS_SERVER_ADMIN_PASSWORD=${technitium_admin_password}
     ports:
       - "53:53/tcp"
       - "53:53/udp"

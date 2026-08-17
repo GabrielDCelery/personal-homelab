@@ -46,6 +46,8 @@ docker compose up -d
 dir = "{{ config_root }}/infra-nuc"
 run = """
 docker context use homelab-nuc
-docker compose pull
-docker compose up -d
+sops exec-env ../secrets.yaml '
+  docker compose pull
+  docker compose up -d
+'
 """
