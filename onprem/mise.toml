@@ -19,14 +19,17 @@ fi
 [tasks.bootstrap]
 description = "Bootstrap dev environment"
 run = """
-docker context update homelab --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_HOST\" 2>/dev/null || \
-docker context create homelab --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_HOST\"
-docker context use homelab
+docker context update homelab-desktop --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_DESKTOP_HOST\" 2>/dev/null || \
+docker context create homelab-desktop --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_DESKTOP_HOST\"
+docker context update homelab-nuc --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_NUC_HOST\" 2>/dev/null || \
+docker context create homelab-nuc --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_NUC_HOST\"
+docker context use homelab-desktop
 """
 
 [tasks."docker:deploy:infra"]
 dir = "{{ config_root }}/infra"
 run = """
+docker context use homelab-desktop
 docker compose pull
 docker compose up -d
 """
@@ -34,6 +37,15 @@ docker compose up -d
 [tasks."docker:deploy:services"]
 dir = "{{ config_root }}/services"
 run = """
+docker context use homelab-desktop
+docker compose pull
+docker compose up -d
+"""
+
+[tasks."docker:deploy:infra-nuc"]
+dir = "{{ config_root }}/infra-nuc"
+run = """
+docker context use homelab-nuc
 docker compose pull
 docker compose up -d
 """

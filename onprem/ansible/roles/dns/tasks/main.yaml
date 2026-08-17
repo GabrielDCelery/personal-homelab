@@ -1,0 +1,35 @@
+# sudo mkdir -p /srv/technitium
+# sudo chmod 0755 /srv/technitium
+# sudo chown root:root /srv/technitium
+- name: Create Technitium DNS data directory
+  ansible.builtin.file:
+    path: /srv/technitium
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+# sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+- name: Point resolv.conf at the real upstream nameservers, not the stub
+  ansible.builtin.file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: true
+  become: true
+
+# sudo sed -i 's/^#\?DNSStubListener=.*/DNSStubListener=no/' /etc/systemd/resolved.conf
+- name: Disable systemd-resolved stub listener so port 53 is free
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^#?DNSStubListener='
+    line: 'DNSStubListener=no'
+  become: true
+
+# sudo systemctl restart systemd-resolved
+- name: Restart systemd-resolved to apply config
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted
+  become: true

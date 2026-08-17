@@ -36,8 +36,10 @@
   hosts: infra_hosts
   vars:
     target_user: "{{ lookup('env', 'HOMELAB_USER') }}"
-  roles: []
-  # dns, traefik, registry, infisical roles land here in Phase 2
+  roles:
+    - role: dns
+      tags: dns
+  # traefik, registry, infisical roles land here in Phase 2
 
   # # docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
   # - name: Test GPU access in Docker

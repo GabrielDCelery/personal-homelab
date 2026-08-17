@@ -18,7 +18,7 @@ services:
               capabilities: [gpu]
 
   shadowrun-rag:
-    image: ${HOMELAB_HOST}:5000/homelab/shadowrun-rag:latest
+    image: ${HOMELAB_DESKTOP_HOST}:5000/homelab/shadowrun-rag:latest
     container_name: shadowrun-rag
     restart: unless-stopped
     environment:
@@ -89,7 +89,7 @@ services:
               capabilities: [gpu]
 
   sd-scripts:
-    image: ${HOMELAB_HOST}:5000/homelab/sd-scripts:latest
+    image: ${HOMELAB_DESKTOP_HOST}:5000/homelab/sd-scripts:latest
     container_name: sd-scripts
     restart: unless-stopped
     environment:
