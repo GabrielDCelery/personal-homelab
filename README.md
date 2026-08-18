@@ -10,10 +10,12 @@ On-premises homelab running GPU-accelerated services on a desktop, managed as co
 - **IaC**: Ansible, Docker Compose
 
 ```
-onprem/
-├── ansible/                # Desktop provisioning (Docker, NVIDIA drivers, mise)
-│   └── roles/
-└── docker/                 # Compose file (Ollama, Glances)
+ansible/                    # Host provisioning (Docker, NVIDIA drivers, mise, DNS)
+├── roles/
+infra/                      # Desktop infra compose stack
+infra-nuc/                  # NUC infra compose stack (Technitium DNS)
+services/                   # Desktop services compose stack (Ollama, Glances)
+scripts/                    # Task logic invoked by mise (non-trivial tasks)
 documentation/              # Hardware specs, network diagrams
 archive/cloud/              # Archived cloud deployment (DigitalOcean + k3s)
 ```
@@ -56,24 +58,27 @@ Host homelabdesktop
 4. Copy `.env.example` to `.env` and fill in values:
 
 ```sh
-cp onprem/.env.example onprem/.env
+cp .env.example .env
 ```
 
-5. Run `cd onprem && mise run bootstrap`
+5. Run `mise run bootstrap`
 
-### On-prem (Desktop)
+### On-prem (Desktop + NUC)
 
-All tasks are run from `onprem/` via mise:
+All tasks are run from the repo root via mise:
 
-| Task                              | Description                       |
-| --------------------------------- | --------------------------------- |
-| `mise run bootstrap`              | Create Docker context for homelab |
-| `mise run ansible:deploy`         | Run full Ansible playbook         |
-| `mise run docker:deploy:infra`    | Deploy infra compose stack        |
-| `mise run docker:deploy:services` | Deploy services compose stack     |
+| Task                               | Description                                           |
+| ---------------------------------- | ------------------------------------------------------ |
+| `mise run bootstrap`               | Create Docker contexts for desktop and NUC            |
+| `mise run ansible:deploy:desktop`  | Run Ansible playbook against the desktop              |
+| `mise run ansible:deploy:nuc`      | Run Ansible playbook against the NUC                  |
+| `mise run docker:deploy:infra`     | Deploy desktop infra compose stack                    |
+| `mise run docker:deploy:services`  | Deploy desktop services compose stack                 |
+| `mise run docker:deploy:infra-nuc` | Deploy NUC infra compose stack                        |
+| `mise run dns:configure-blocking`  | Enable ad blocking on the NUC's Technitium DNS server |
 
 For Ansible tag-specific deploys:
 
 ```sh
-mise run ansible:deploy -- -t git
+mise run ansible:deploy:desktop git
 ```

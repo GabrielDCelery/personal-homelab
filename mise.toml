@@ -1,6 +1,71 @@
 [tools]
 age = "1.3.1"
 sops = "3.11.0"
+ansible = "13.2.0"
 
 [env]
 SOPS_AGE_KEY_FILE = "{{env.HOME}}/.age/homelab.txt"
+_.file = { path = "{{config_root}}/.env" }
+
+[tasks."ansible:deploy:desktop"]
+dir = "{{config_root}}/ansible"
+usage = 'arg "[tags]" help="Ansible tags to run (optional)"'
+run = '''
+#!/usr/bin/env bash
+if [[ -n "${usage_tags:-}" ]]; then
+  ansible-playbook -i inventory.yaml playbook.yaml --limit gpu_hosts --tags "$usage_tags"
+else
+  ansible-playbook -i inventory.yaml playbook.yaml --limit gpu_hosts
+fi
+'''
+
+[tasks."ansible:deploy:nuc"]
+dir = "{{config_root}}/ansible"
+usage = 'arg "[tags]" help="Ansible tags to run (optional)"'
+run = '''
+#!/usr/bin/env bash
+if [[ -n "${usage_tags:-}" ]]; then
+  ansible-playbook -i inventory.yaml playbook.yaml --limit infra_hosts --tags "$usage_tags"
+else
+  ansible-playbook -i inventory.yaml playbook.yaml --limit infra_hosts
+fi
+'''
+
+[tasks.bootstrap]
+description = "Bootstrap dev environment"
+run = """
+docker context update homelab-desktop --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_DESKTOP_HOST\" 2>/dev/null || docker context create homelab-desktop --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_DESKTOP_HOST\"
+docker context update homelab-nuc --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_NUC_HOST\" 2>/dev/null || docker context create homelab-nuc --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_NUC_HOST\"
+docker context use homelab-desktop
+"""
+
+[tasks."docker:deploy:infra"]
+dir = "{{ config_root }}/infra"
+run = """
+docker context use homelab-desktop
+docker compose pull
+docker compose up -d
+"""
+
+[tasks."docker:deploy:services"]
+dir = "{{ config_root }}/services"
+run = """
+docker context use homelab-desktop
+docker compose pull
+docker compose up -d
+"""
+
+[tasks."docker:deploy:infra-nuc"]
+dir = "{{ config_root }}/infra-nuc"
+run = """
+docker context use homelab-nuc
+sops exec-env ../secrets.yaml '
+  docker compose pull
+  docker compose up -d
+'
+"""
+
+[tasks."dns:configure-blocking"]
+description = "Enable ad blocking on Technitium via its API"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/dns-configure-blocking.sh"

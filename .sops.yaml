@@ -1,3 +1,3 @@
 creation_rules:
-  - path_regex: onprem/secrets\.yaml$
+  - path_regex: secrets\.yaml$
     age: age1j0wndvt5mj0pzspkk0d6g9n6azusdhtkxk2ahuk92dq0gl2z7d2qxsuw5j
