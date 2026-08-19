@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: technitium
+  namespace: kube-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`technitium.home.gaborzeller.com`)
+      kind: Rule
+      services:
+        - name: technitium-external
+          port: 5380
+  tls:
+    certResolver: cloudflare
+    domains:
+      - main: "*.home.gaborzeller.com"
