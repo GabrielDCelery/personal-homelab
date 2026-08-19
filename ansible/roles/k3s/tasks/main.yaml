@@ -1,0 +1,31 @@
+# curl -sfL https://get.k3s.io | sh -
+- name: Install k3s
+  ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -
+  args:
+    creates: /usr/local/bin/k3s
+  become: true
+
+# sudo cat /etc/rancher/k3s/k3s.yaml > ~/.kube/homelab-nuc.yaml
+- name: Fetch kubeconfig to controller
+  ansible.builtin.fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: "{{ lookup('env', 'HOME') }}/.kube/homelab-nuc.yaml"
+    flat: true
+  become: true
+
+# chmod 600 ~/.kube/homelab-nuc.yaml
+- name: Restrict local kubeconfig permissions
+  ansible.builtin.file:
+    path: "{{ lookup('env', 'HOME') }}/.kube/homelab-nuc.yaml"
+    mode: '0600'
+  delegate_to: localhost
+  become: false
+
+# sed -i 's/127.0.0.1/10.83.16.98/' ~/.kube/homelab-nuc.yaml
+- name: Point kubeconfig at the NUC's real IP instead of localhost
+  ansible.builtin.replace:
+    path: "{{ lookup('env', 'HOME') }}/.kube/homelab-nuc.yaml"
+    regexp: 'https://127\.0\.0\.1:6443'
+    replace: "https://{{ ansible_host }}:6443"
+  delegate_to: localhost
+  become: false

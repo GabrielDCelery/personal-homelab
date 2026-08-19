@@ -6,6 +6,7 @@ jq = "1.8.1"
 
 [env]
 SOPS_AGE_KEY_FILE = "{{env.HOME}}/.age/homelab.txt"
+KUBECONFIG = "{{env.HOME}}/.kube/homelab-nuc.yaml"
 _.file = { path = "{{config_root}}/.env" }
 
 [tasks."ansible:deploy:desktop"]

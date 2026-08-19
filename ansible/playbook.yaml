@@ -39,6 +39,8 @@
   vars:
     target_user: "{{ lookup('env', 'HOMELAB_USER') }}"
   roles:
+    - role: k3s
+      tags: k3s
     - role: dns
       tags: dns
   # traefik, registry, infisical roles land here in Phase 2
