@@ -1,0 +1,7 @@
+- name: Install btop
+  ansible.builtin.apt:
+    pkg:
+      - btop
+    state: present
+    update_cache: yes
+  become: true

@@ -9,6 +9,8 @@
       tags: docker
     - role: git
       tags: git
+    - role: btop
+      tags: btop
     - role: homelab
       tags: homelab
 
