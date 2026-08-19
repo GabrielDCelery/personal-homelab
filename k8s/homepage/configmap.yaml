@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-config
+  namespace: default
+data:
+  services.yaml: |
+    - Homelab:
+        - Technitium:
+            href: https://technitium.home.gaborzeller.com
+            description: DNS + ad blocking
+  settings.yaml: ""
+  bookmarks.yaml: ""
+  widgets.yaml: ""
+  docker.yaml: ""
+  kubernetes.yaml: ""
+  custom.css: ""
+  custom.js: ""
+  proxmox.yaml: ""

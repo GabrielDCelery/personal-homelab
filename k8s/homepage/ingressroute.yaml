@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: homepage
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`dashboard.home.gaborzeller.com`)
+      kind: Rule
+      services:
+        - name: homepage
+          port: 3000
+  tls:
+    certResolver: cloudflare
+    domains:
+      - main: "*.home.gaborzeller.com"
