@@ -11,7 +11,11 @@ data:
             description: DNS + ad blocking
   settings.yaml: ""
   bookmarks.yaml: ""
-  widgets.yaml: ""
+  widgets.yaml: |
+    - resources:
+        cpu: true
+        memory: true
+        uptime: true
   docker.yaml: ""
   kubernetes.yaml: ""
   custom.css: ""
