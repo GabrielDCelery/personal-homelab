@@ -1,6 +1,6 @@
 services:
   technitium-dns:
-    image: technitium/dns-server:14.3.0
+    image: technitium/dns-server:15.4.0
     container_name: technitium-dns
     restart: unless-stopped
     environment:
