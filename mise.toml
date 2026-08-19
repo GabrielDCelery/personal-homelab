@@ -2,6 +2,7 @@
 age = "1.3.1"
 sops = "3.11.0"
 ansible = "13.2.0"
+jq = "1.8.1"
 
 [env]
 SOPS_AGE_KEY_FILE = "{{env.HOME}}/.age/homelab.txt"
@@ -21,6 +22,7 @@ fi
 
 [tasks."ansible:deploy:nuc"]
 dir = "{{config_root}}/ansible"
+description = "mise run ansible:deploy:nuc git"
 usage = 'arg "[tags]" help="Ansible tags to run (optional)"'
 run = '''
 #!/usr/bin/env bash
@@ -34,6 +36,7 @@ fi
 [tasks.bootstrap]
 description = "Bootstrap dev environment"
 run = """
+chmod +x ./scripts/*.sh
 docker context update homelab-desktop --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_DESKTOP_HOST\" 2>/dev/null || docker context create homelab-desktop --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_DESKTOP_HOST\"
 docker context update homelab-nuc --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_NUC_HOST\" 2>/dev/null || docker context create homelab-nuc --docker \"host=ssh://$HOMELAB_USER@$HOMELAB_NUC_HOST\"
 docker context use homelab-desktop
@@ -69,3 +72,8 @@ sops exec-env ../secrets.yaml '
 description = "Enable ad blocking on Technitium via its API"
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/dns-configure-blocking.sh"
+
+[tasks."verify-cloudflare-tokens"]
+description = "Verifies cloudflare tokens"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/verify-cloudflare-tokens.sh"
