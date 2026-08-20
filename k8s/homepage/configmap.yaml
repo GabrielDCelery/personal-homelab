@@ -9,6 +9,9 @@ data:
         - Technitium:
             href: https://technitium.home.gaborzeller.com
             description: DNS + ad blocking
+        - Prometheus:
+            href: https://prometheus.home.gaborzeller.com
+            description: Prometheus
   settings.yaml: ""
   bookmarks.yaml: ""
   widgets.yaml: |
