@@ -90,6 +90,11 @@ description = "Create/update the Cloudflare API token Secret in k3s"
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-cloudflare-secret.sh"
 
+[tasks."k8s:deploy:grafana-secret"]
+description = "Create/update the Grafana admin credentials Secret in k3s"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-grafana-secret.sh"
+
 [tasks."k8s:deploy:manifests"]
 description = "Apply all Kubernetes manifests to the k3s cluster"
 dir = "{{ config_root }}"

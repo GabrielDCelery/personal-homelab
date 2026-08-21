@@ -12,6 +12,9 @@ data:
         - Prometheus:
             href: https://prometheus.home.gaborzeller.com
             description: Prometheus
+        - Grafana:
+            href: https://grafana.home.gaborzeller.com
+            description: Grafana
   settings.yaml: ""
   bookmarks.yaml: ""
   widgets.yaml: |
