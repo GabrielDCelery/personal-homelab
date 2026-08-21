@@ -32,52 +32,98 @@
     {
       "id": 2,
       "type": "timeseries",
-      "title": "Node CPU Load (1m avg)",
+      "title": "Node CPU Busy %",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "node_load1",
-          "legendFormat": "{{instance}}",
+          "expr": "100 - (avg by (node_name) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "{{node_name}}",
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         }
       ],
-      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
       "options": {}
     },
     {
       "id": 3,
       "type": "timeseries",
-      "title": "Node Memory Available",
+      "title": "Node Memory Used %",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "node_memory_MemAvailable_bytes",
-          "legendFormat": "{{instance}}",
+          "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+          "legendFormat": "{{node_name}}",
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         }
       ],
-      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
       "options": {}
     },
     {
       "id": 4,
       "type": "timeseries",
-      "title": "Pods by Phase",
+      "title": "Pod Status (current)",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "sum(kube_pod_status_phase) by (phase)",
+          "expr": "sum(kube_pod_status_phase{phase=~\"Pending|Running|Unknown\"}) by (phase)",
           "legendFormat": "{{phase}}",
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         }
       ],
-      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 40,
+            "gradientMode": "none",
+            "spanNulls": false,
+            "stacking": { "mode": "normal", "group": "A" }
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Completions, Failures & Restarts",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum(kube_pod_status_phase{phase=~\"Succeeded|Failed\"}) by (phase)",
+          "legendFormat": "{{phase}}",
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "prometheus" }
+        },
+        {
+          "expr": "sum(increase(kube_pod_container_status_restarts_total[15m])) by (pod)",
+          "legendFormat": "{{pod}} restarts",
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "prometheus" }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
       "options": {}
     }
   ]
