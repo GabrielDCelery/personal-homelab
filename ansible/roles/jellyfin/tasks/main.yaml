@@ -1,11 +1,12 @@
-# sudo mkdir -p /srv/jellyfin
-# sudo chmod 0755 /srv/jellyfin
-# sudo chown root:root /srv/jellyfin
-- name: Create Jellyfin media data directory
+- name: Create Jellyfin directories
   ansible.builtin.file:
-    path: /srv/jellyfin
+    path: "{{ item }}"
     state: directory
     owner: root
     group: root
     mode: '0755'
+  loop:
+    - /srv/jellyfin
+    - /srv/jellyfin/config
+    - /srv/jellyfin/media
   become: true

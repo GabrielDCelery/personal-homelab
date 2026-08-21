@@ -15,6 +15,9 @@ data:
         - Grafana:
             href: https://grafana.home.gaborzeller.com
             description: Grafana
+        - Jellyfin:
+            href: https://jellyfin.home.gaborzeller.com
+            description: Jellyfin
   settings.yaml: ""
   bookmarks.yaml: ""
   widgets.yaml: |
