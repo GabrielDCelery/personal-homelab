@@ -96,6 +96,15 @@ dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-grafana-secret.sh"
 
 [tasks."k8s:deploy:manifests"]
-description = "Apply all Kubernetes manifests to the k3s cluster"
+description = "Apply all Kubernetes manifests to the k3s cluster (kustomize-aware per component)"
 dir = "{{ config_root }}"
-run = "kubectl apply -f k8s/ --recursive"
+run = '''
+#!/usr/bin/env bash
+for dir in k8s/*/; do
+  if [ -f "$dir/kustomization.yaml" ]; then
+    kubectl apply -k "$dir"
+  else
+    kubectl apply -f "$dir" --recursive
+  fi
+done
+'''
