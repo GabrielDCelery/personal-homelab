@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: default
+data:
+  homelab-overview.json: |
+    {
+      "id": null,
+      "uid": "homelab-overview",
+      "title": "Homelab Overview",
+      "tags": ["homelab"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "30s",
+      "time": { "from": "now-6h", "to": "now" },
+      "annotations": { "list": [] },
+      "templating": { "list": [] },
+      "panels": [
+        {
+          "id": 1,
+          "type": "table",
+          "title": "Scrape Target Health",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "expr": "up",
+              "format": "table",
+              "instant": true,
+              "refId": "A",
+              "datasource": { "type": "prometheus", "uid": "prometheus" }
+            }
+          ],
+          "fieldConfig": { "defaults": {}, "overrides": [] },
+          "options": {}
+        },
+        {
+          "id": 2,
+          "type": "timeseries",
+          "title": "Node CPU Load (1m avg)",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "expr": "node_load1",
+              "legendFormat": "{{instance}}",
+              "refId": "A",
+              "datasource": { "type": "prometheus", "uid": "prometheus" }
+            }
+          ],
+          "fieldConfig": { "defaults": {}, "overrides": [] },
+          "options": {}
+        },
+        {
+          "id": 3,
+          "type": "timeseries",
+          "title": "Node Memory Available",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "expr": "node_memory_MemAvailable_bytes",
+              "legendFormat": "{{instance}}",
+              "refId": "A",
+              "datasource": { "type": "prometheus", "uid": "prometheus" }
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "options": {}
+        },
+        {
+          "id": 4,
+          "type": "timeseries",
+          "title": "Pods by Phase",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "expr": "sum(kube_pod_status_phase) by (phase)",
+              "legendFormat": "{{phase}}",
+              "refId": "A",
+              "datasource": { "type": "prometheus", "uid": "prometheus" }
+            }
+          ],
+          "fieldConfig": { "defaults": {}, "overrides": [] },
+          "options": {}
+        }
+      ]
+    }
