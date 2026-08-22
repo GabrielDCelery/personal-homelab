@@ -142,6 +142,29 @@
       ],
       "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
       "options": {}
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Node Network Traffic (enp2s0)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_bytes_total{device=\"enp2s0\"}[5m])",
+          "legendFormat": "{{node_name}} rx",
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "prometheus" }
+        },
+        {
+          "expr": "rate(node_network_transmit_bytes_total{device=\"enp2s0\"}[5m])",
+          "legendFormat": "{{node_name}} tx",
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "prometheus" }
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+      "options": {}
     }
   ]
 }
