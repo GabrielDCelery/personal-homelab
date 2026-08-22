@@ -8,5 +8,5 @@
   loop:
     - /srv/jellyfin
     - /srv/jellyfin/config
-    - /srv/jellyfin/media
+    - /srv/jellyfin/media/movies
   become: true
