@@ -39,6 +39,8 @@
   vars:
     target_user: "{{ lookup('env', 'HOMELAB_USER') }}"
   roles:
+    - role: facts
+      tags: facts
     - role: k3s
       tags: k3s
     - role: dns

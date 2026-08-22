@@ -82,6 +82,7 @@ run = "sops exec-env secrets.yaml ./scripts/dns-configure-zone.sh"
 
 [tasks."jellyfin:configure"]
 description = "Create the Movies library, enable Quick Sync hardware acceleration, and create the partner user account via Jellyfin's API"
+depends = [{ task = "ansible:deploy:nuc", args = ["facts"] }]
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/jellyfin-configure.sh"
 

@@ -1,0 +1,21 @@
+- name: Discover DRI render device
+  ansible.builtin.shell: ls /dev/dri | grep '^render'
+  register: dri_render_device
+  changed_when: false
+
+- name: Ensure generated facts directory exists
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/generated"
+    state: directory
+    mode: '0755'
+
+- name: Write discovered facts to local file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    dest: "{{ playbook_dir }}/generated/nuc-facts.json"
+    content: |
+      {
+        "network_interface": "{{ ansible_facts.default_ipv4.interface }}",
+        "render_device": "/dev/dri/{{ dri_render_device.stdout }}"
+      }

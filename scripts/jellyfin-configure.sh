@@ -4,10 +4,13 @@ set -euo pipefail
 BASE_URL="https://jellyfin.home.gaborzeller.com"
 AUTH_HEADER="X-Emby-Token: $jellyfin_api_key"
 
-# Query the actual render device rather than assuming renderD128 - correct on this
-# single-GPU NUC by DRM convention, but not guaranteed on other hardware
-RENDER_DEVICE=$(ssh "$HOMELAB_USER@$HOMELAB_NUC_HOST" "ls /dev/dri | grep '^render'")
-RENDER_DEVICE_PATH="/dev/dri/$RENDER_DEVICE"
+FACTS_FILE="$(dirname "$0")/../ansible/generated/nuc-facts.json"
+if [[ ! -f "$FACTS_FILE" ]]; then
+  echo "Missing $FACTS_FILE - run the Ansible facts role against the NUC first" >&2
+  exit 1
+fi
+
+RENDER_DEVICE_PATH=$(jq -r '.render_device' "$FACTS_FILE")
 
 # Alternatives depending on GPU vendor: amf (AMD), nvenc (Nvidia), vaapi (generic)
 HARDWARE_ACCEL_TYPE="$JELLYFIN_HW_ACCEL_TYPE"
