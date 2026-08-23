@@ -14,6 +14,9 @@ data:
             icon: prometheus.svg
             href: https://prometheus.home.gaborzeller.com
             description: Prometheus
+            widget:
+              type: prometheus
+              url: http://prometheus:9090
         - Grafana:
             icon: grafana.svg
             href: https://grafana.home.gaborzeller.com
