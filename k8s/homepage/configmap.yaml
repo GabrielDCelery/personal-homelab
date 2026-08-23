@@ -22,7 +22,12 @@ data:
             icon: jellyfin.svg
             href: https://jellyfin.home.gaborzeller.com
             description: Jellyfin
-  settings.yaml: ""
+  settings.yaml: |
+    layout:
+      Homelab:
+        style: row
+        columns: 2
+        header: false
   bookmarks.yaml: ""
   widgets.yaml: |
     - resources:
