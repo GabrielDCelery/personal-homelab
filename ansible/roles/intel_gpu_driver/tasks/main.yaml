@@ -1,0 +1,7 @@
+- name: Install Intel VAAPI driver
+  ansible.builtin.apt:
+    name:
+      - intel-media-va-driver-non-free
+      - vainfo
+    state: present
+  become: true

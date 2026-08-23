@@ -41,6 +41,8 @@
   roles:
     - role: facts
       tags: facts
+    - role: intel_gpu_driver
+      tags: intel_gpu_driver
     - role: k3s
       tags: k3s
     - role: dns
