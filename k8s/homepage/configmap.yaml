@@ -7,15 +7,19 @@ data:
   services.yaml: |
     - Homelab:
         - Technitium:
+            icon: technitium.svg
             href: https://technitium.home.gaborzeller.com
             description: DNS + ad blocking
         - Prometheus:
+            icon: prometheus.svg
             href: https://prometheus.home.gaborzeller.com
             description: Prometheus
         - Grafana:
+            icon: grafana.svg
             href: https://grafana.home.gaborzeller.com
             description: Grafana
         - Jellyfin:
+            icon: jellyfin.svg
             href: https://jellyfin.home.gaborzeller.com
             description: Jellyfin
   settings.yaml: ""
