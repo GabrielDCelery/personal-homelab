@@ -3,6 +3,10 @@
         icon: technitium.svg
         href: https://technitium.home.gaborzeller.com
         description: DNS + ad blocking
+        widget:
+          type: technitium
+          url: http://technitium-external.default.svc.cluster.local:5380
+          key: "{{HOMEPAGE_VAR_TECHNITIUM_KEY}}"
     - Prometheus:
         icon: prometheus.svg
         href: https://prometheus.home.gaborzeller.com

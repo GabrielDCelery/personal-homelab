@@ -31,6 +31,11 @@ spec:
                 secretKeyRef:
                   name: grafana-admin-credentials
                   key: password
+            - name: HOMEPAGE_VAR_TECHNITIUM_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-credentials
+                  key: technitiumApiKey
           volumeMounts:
             - name: config
               mountPath: /app/config

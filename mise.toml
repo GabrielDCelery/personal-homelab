@@ -96,6 +96,11 @@ description = "Trigger a Jellyfin library rescan via its API (run after adding n
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/jellyfin-scan-library.sh"
 
+[tasks."technitium:bootstrap-api-key"]
+description = "Generate (or reuse) a dedicated Technitium API token via its API and write it to secrets.yaml as technitium_api_key"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/technitium-bootstrap-api-key.sh"
+
 [tasks."verify-cloudflare-tokens"]
 description = "Verifies cloudflare tokens"
 dir = "{{ config_root }}"
