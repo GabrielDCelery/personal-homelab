@@ -9,7 +9,7 @@
         description: Prometheus
         widget:
           type: prometheus
-          url: http://prometheus:9090
+          url: http://prometheus.default.svc.cluster.local:9090
     - Grafana:
         icon: grafana.svg
         href: https://grafana.home.gaborzeller.com
@@ -18,3 +18,8 @@
         icon: jellyfin.svg
         href: https://jellyfin.home.gaborzeller.com
         description: Jellyfin
+        widget:
+          type: jellyfin
+          url: http://jellyfin.default.svc.cluster.local:8096
+          key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
+          enableBlocks: true

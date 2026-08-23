@@ -21,6 +21,11 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: dashboard.home.gaborzeller.com
+            - name: HOMEPAGE_VAR_JELLYFIN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-credentials
+                  key: jellyfinApiKey
           volumeMounts:
             - name: config
               mountPath: /app/config
