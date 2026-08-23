@@ -80,6 +80,11 @@ description = "Create the home.gaborzeller.com zone and technitium A record via 
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/dns-configure-zone.sh"
 
+[tasks."jellyfin:bootstrap-api-key"]
+description = "Generate (or reuse) a dedicated Jellyfin API key via its API and write it to secrets.yaml as jellyfin_api_key"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/jellyfin-bootstrap-api-key.sh"
+
 [tasks."jellyfin:configure"]
 description = "Create the Movies library, enable Quick Sync hardware acceleration, and create the partner user account via Jellyfin's API"
 depends = [{ task = "ansible:deploy:nuc", args = ["facts"] }]
