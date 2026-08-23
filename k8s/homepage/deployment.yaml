@@ -26,6 +26,11 @@ spec:
                 secretKeyRef:
                   name: homepage-credentials
                   key: jellyfinApiKey
+            - name: HOMEPAGE_VAR_GRAFANA_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-admin-credentials
+                  key: password
           volumeMounts:
             - name: config
               mountPath: /app/config

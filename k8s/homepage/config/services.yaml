@@ -14,6 +14,11 @@
         icon: grafana.svg
         href: https://grafana.home.gaborzeller.com
         description: Grafana
+        widget:
+          type: grafana
+          url: http://grafana.default.svc.cluster.local:3000
+          username: admin
+          password: "{{HOMEPAGE_VAR_GRAFANA_ADMIN_PASSWORD}}"
     - Jellyfin:
         icon: jellyfin.svg
         href: https://jellyfin.home.gaborzeller.com
