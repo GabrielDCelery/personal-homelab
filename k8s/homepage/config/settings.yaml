@@ -1,0 +1,5 @@
+layout:
+  Homelab:
+    style: row
+    columns: 2
+    header: false
