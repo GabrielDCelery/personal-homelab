@@ -23,3 +23,5 @@
           url: http://jellyfin.default.svc.cluster.local:8096
           key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
           enableBlocks: true
+          version: 2
+          enableUser: true
