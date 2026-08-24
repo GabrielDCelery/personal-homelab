@@ -7,3 +7,9 @@ datasources:
     url: http://prometheus.default.svc.cluster.local:9090
     isDefault: true
     editable: false
+  - name: Loki
+    uid: loki
+    type: loki
+    access: proxy
+    url: http://loki.default.svc.cluster.local:3100
+    editable: false
