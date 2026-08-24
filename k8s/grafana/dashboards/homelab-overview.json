@@ -43,7 +43,10 @@
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         }
       ],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "min": 0, "max": 100 },
+        "overrides": []
+      },
       "options": {}
     },
     {
@@ -60,7 +63,10 @@
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         }
       ],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "min": 0, "max": 100 },
+        "overrides": []
+      },
       "options": {}
     },
     {
@@ -95,40 +101,6 @@
     {
       "id": 5,
       "type": "timeseries",
-      "title": "Completions, Failures & Restarts",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "targets": [
-        {
-          "expr": "sum(kube_pod_status_phase{phase=~\"Succeeded|Failed\"}) by (phase)",
-          "legendFormat": "{{phase}}",
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "prometheus" }
-        },
-        {
-          "expr": "sum(increase(kube_pod_container_status_restarts_total[15m])) by (pod)",
-          "legendFormat": "{{pod}} restarts",
-          "refId": "B",
-          "datasource": { "type": "prometheus", "uid": "prometheus" }
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "spanNulls": false
-          }
-        },
-        "overrides": []
-      },
-      "options": {}
-    },
-    {
-      "id": 6,
-      "type": "timeseries",
       "title": "Node Disk Used % (root fs)",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -140,11 +112,14 @@
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         }
       ],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "min": 0, "max": 100 },
+        "overrides": []
+      },
       "options": {}
     },
     {
-      "id": 7,
+      "id": 6,
       "type": "timeseries",
       "title": "Node Network Traffic (enp2s0)",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
@@ -167,7 +142,7 @@
       "options": {}
     },
     {
-      "id": 8,
+      "id": 7,
       "type": "logs",
       "title": "Pod Logs",
       "gridPos": { "h": 10, "w": 24, "x": 0, "y": 32 },
