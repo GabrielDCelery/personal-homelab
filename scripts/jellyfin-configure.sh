@@ -36,7 +36,8 @@ UPDATED_ENCODING_CONFIG=$(echo "$CURRENT_ENCODING_CONFIG" | jq \
   '.HardwareAccelerationType = $accelType
    | .EnableHardwareEncoding = true
    | .VaapiDevice = $device
-   | .QsvDevice = $device')
+   | .QsvDevice = $device
+   | .HardwareDecodingCodecs = (.HardwareDecodingCodecs + ["h264", "hevc"] | unique)')
 
 curl -sS -X POST "$BASE_URL/System/Configuration/encoding" \
   -H "$AUTH_HEADER" \
