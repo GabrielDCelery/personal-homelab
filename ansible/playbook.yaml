@@ -13,6 +13,8 @@
       tags: btop
     - role: homelab
       tags: homelab
+    - role: wol
+      tags: wol
 
 - name: Set up GPU workloads
   hosts: gpu_hosts

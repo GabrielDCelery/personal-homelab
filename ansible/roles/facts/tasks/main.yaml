@@ -6,14 +6,14 @@
 - name: Ensure generated facts directory exists
   delegate_to: localhost
   ansible.builtin.file:
-    path: "{{ playbook_dir }}/generated"
+    path: "{{ playbook_dir }}/generated/{{ inventory_hostname | regex_replace('^homelab', '') }}"
     state: directory
     mode: '0755'
 
 - name: Write discovered facts to local file
   delegate_to: localhost
   ansible.builtin.copy:
-    dest: "{{ playbook_dir }}/generated/nuc-facts.json"
+    dest: "{{ playbook_dir }}/generated/{{ inventory_hostname | regex_replace('^homelab', '') }}/facts.json"
     content: |
       {
         "network_interface": "{{ ansible_facts.default_ipv4.interface }}",

@@ -1,0 +1,57 @@
+- name: Install ethtool
+  ansible.builtin.apt:
+    pkg:
+      - ethtool
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Check NIC WoL support
+  ansible.builtin.shell: "ethtool {{ ansible_facts.default_ipv4.interface }} | grep -A1 'Supports Wake-on'"
+  register: wol_support
+  changed_when: false
+  become: true
+
+- name: Show NIC WoL support
+  ansible.builtin.debug:
+    var: wol_support.stdout_lines
+
+- name: Enable Wake-on-LAN now
+  ansible.builtin.command: "ethtool -s {{ ansible_facts.default_ipv4.interface }} wol g"
+  become: true
+  changed_when: true
+
+- name: Install systemd unit to re-enable WoL on every boot
+  ansible.builtin.template:
+    src: wol.service.j2
+    dest: /etc/systemd/system/wol.service
+    mode: '0644'
+  become: true
+  register: wol_unit
+
+- name: Enable and start WoL systemd unit
+  ansible.builtin.systemd:
+    name: wol.service
+    enabled: true
+    state: started
+    daemon_reload: "{{ wol_unit.changed }}"
+  become: true
+
+- name: Ensure generated facts directory exists
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/generated/{{ inventory_hostname | regex_replace('^homelab', '') }}"
+    state: directory
+    mode: '0755'
+
+- name: Write WoL facts to local file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    dest: "{{ playbook_dir }}/generated/{{ inventory_hostname | regex_replace('^homelab', '') }}/wol.json"
+    content: |
+      {
+        "hostname": "{{ inventory_hostname }}",
+        "ip_address": "{{ ansible_host }}",
+        "interface": "{{ ansible_facts.default_ipv4.interface }}",
+        "mac_address": "{{ ansible_facts.default_ipv4.macaddress }}"
+      }

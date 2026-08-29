@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_URL="https://jellyfin.home.gaborzeller.com"
 AUTH_HEADER="X-Emby-Token: $jellyfin_api_key"
 
-FACTS_FILE="$(dirname "$0")/../ansible/generated/nuc-facts.json"
+FACTS_FILE="$(dirname "$0")/../ansible/generated/nuc/facts.json"
 if [[ ! -f "$FACTS_FILE" ]]; then
   echo "Missing $FACTS_FILE - run the Ansible facts role against the NUC first" >&2
   exit 1
