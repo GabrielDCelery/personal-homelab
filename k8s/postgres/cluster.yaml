@@ -1,0 +1,19 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: homelab-postgres
+  namespace: default
+spec:
+  instances: 1
+  storage:
+    size: 10Gi
+    storageClass: postgres-local-path
+  managed:
+    services:
+      additional:
+        - selectorType: rw
+          serviceTemplate:
+            metadata:
+              name: homelab-postgres-lb
+            spec:
+              type: LoadBalancer

@@ -53,6 +53,8 @@
       tags: jellyfin
     - role: alloy
       tags: alloy
+    - role: postgres
+      tags: postgres
   # traefik, registry, infisical roles land here in Phase 2
 
   # # docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi

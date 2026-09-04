@@ -1,0 +1,8 @@
+- name: Create postgres data directory
+  ansible.builtin.file:
+    path: /srv/postgresql
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true

@@ -121,6 +121,16 @@ description = "Create/update the homepage widget credentials Secret in k3s"
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-homepage-secret.sh"
 
+[tasks."k8s:install-cnpg-operator"]
+description = "Install the CloudNativePG operator and its CRDs into the k3s cluster (run once, before applying k8s/postgres)"
+dir = "{{ config_root }}"
+run = "./scripts/k8s-install-cnpg-operator.sh"
+
+[tasks."k8s:bootstrap-postgres-credentials"]
+description = "Read the CNPG-generated app user credentials out of k3s and write them to secrets.yaml as postgres_app_user/postgres_app_password"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/k8s-bootstrap-postgres-credentials.sh"
+
 [tasks."k8s:deploy:manifests"]
 description = "Apply all Kubernetes manifests to the k3s cluster (kustomize-aware per component)"
 dir = "{{ config_root }}"
