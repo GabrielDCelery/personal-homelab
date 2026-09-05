@@ -136,6 +136,11 @@ description = "Generate (or reuse) the ebay_scraper password and create/update i
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-ebay-scraper-secret.sh"
 
+[tasks."k8s:grant-ebay-scraper-privileges"]
+description = "Grant ebay_scraper CREATE on the app database (one-time; CNPG can't express object-level grants declaratively)"
+dir = "{{ config_root }}"
+run = "./scripts/k8s-grant-ebay-scraper-privileges.sh"
+
 [tasks."k8s:deploy:manifests"]
 description = "Apply all Kubernetes manifests to the k3s cluster (kustomize-aware per component)"
 dir = "{{ config_root }}"
