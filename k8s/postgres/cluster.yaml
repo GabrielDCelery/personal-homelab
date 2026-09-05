@@ -9,6 +9,12 @@ spec:
     size: 10Gi
     storageClass: postgres-local-path
   managed:
+    roles:
+      - name: ebay_scraper
+        ensure: present
+        login: true
+        passwordSecret:
+          name: ebay-scraper-password
     services:
       additional:
         - selectorType: rw

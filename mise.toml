@@ -131,6 +131,11 @@ description = "Read the CNPG-generated app user credentials out of k3s and write
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/k8s-bootstrap-postgres-credentials.sh"
 
+[tasks."k8s:deploy:ebay-scraper-secret"]
+description = "Generate (or reuse) the ebay_scraper password and create/update its basic-auth Secret, which the Cluster's managed.roles references"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-ebay-scraper-secret.sh"
+
 [tasks."k8s:deploy:manifests"]
 description = "Apply all Kubernetes manifests to the k3s cluster (kustomize-aware per component)"
 dir = "{{ config_root }}"
