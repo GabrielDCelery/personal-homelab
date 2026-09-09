@@ -1,0 +1,19 @@
+- name: Schedule weekly Docker dangling image prune
+  ansible.builtin.cron:
+    name: "docker image prune"
+    weekday: "0"
+    hour: "3"
+    minute: "0"
+    job: "docker image prune -f >> /var/log/docker-prune.log 2>&1"
+    user: root
+  become: true
+
+- name: Schedule weekly Docker build cache prune
+  ansible.builtin.cron:
+    name: "docker builder prune"
+    weekday: "0"
+    hour: "3"
+    minute: "15"
+    job: "docker builder prune -af --filter until=168h >> /var/log/docker-prune.log 2>&1"
+    user: root
+  become: true
