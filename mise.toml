@@ -106,20 +106,19 @@ description = "Verifies cloudflare tokens"
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/verify-cloudflare-tokens.sh"
 
-[tasks."k8s:deploy:cloudflare-secret"]
-description = "Create/update the Cloudflare API token Secret in k3s"
+[tasks."k8s:deploy:secrets"]
+description = "Create/update all secret-backed Kubernetes Secrets (Cloudflare, Grafana, homepage, ebay-scraper) in one pass"
 dir = "{{ config_root }}"
-run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-cloudflare-secret.sh"
-
-[tasks."k8s:deploy:grafana-secret"]
-description = "Create/update the Grafana admin credentials Secret in k3s"
-dir = "{{ config_root }}"
-run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-grafana-secret.sh"
-
-[tasks."k8s:deploy:homepage-secret"]
-description = "Create/update the homepage widget credentials Secret in k3s"
-dir = "{{ config_root }}"
-run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-homepage-secret.sh"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+sops exec-env secrets.yaml '
+  ./scripts/k8s-deploy-cloudflare-secret.sh
+  ./scripts/k8s-deploy-grafana-secret.sh
+  ./scripts/k8s-deploy-homepage-secret.sh
+  ./scripts/k8s-deploy-ebay-scraper-secret.sh
+'
+'''
 
 [tasks."k8s:install-cnpg-operator"]
 description = "Install the CloudNativePG operator and its CRDs into the k3s cluster (run once, before applying k8s/postgres)"
@@ -130,11 +129,6 @@ run = "./scripts/k8s-install-cnpg-operator.sh"
 description = "Read the CNPG-generated app user credentials out of k3s and write them to secrets.yaml as postgres_app_user/postgres_app_password"
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/k8s-bootstrap-postgres-credentials.sh"
-
-[tasks."k8s:deploy:ebay-scraper-secret"]
-description = "Generate (or reuse) the ebay_scraper password and create/update its basic-auth Secret, which the Cluster's managed.roles references"
-dir = "{{ config_root }}"
-run = "sops exec-env secrets.yaml ./scripts/k8s-deploy-ebay-scraper-secret.sh"
 
 [tasks."k8s:grant-ebay-scraper-privileges"]
 description = "Grant ebay_scraper CREATE on the app database (one-time; CNPG can't express object-level grants declaratively)"
