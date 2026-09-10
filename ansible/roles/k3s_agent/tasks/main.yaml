@@ -1,0 +1,15 @@
+- name: Ensure k3s node token was provided
+  ansible.builtin.assert:
+    that:
+      - lookup('env', 'k3s_node_token') | length > 0
+    fail_msg: "k3s_node_token is empty. Run `mise run k3s:bootstrap-node-token` first, then re-run this via `mise run ansible:deploy:desktop k3s_agent` (which wraps ansible with sops exec-env)."
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+# curl -sfL https://get.k3s.io | K3S_URL=https://<nuc-ip>:6443 K3S_TOKEN=<token> sh -
+- name: Install k3s in agent mode and join the nuc
+  ansible.builtin.shell: "curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars['homelabnuc']['ansible_host'] }}:6443 K3S_TOKEN={{ lookup('env', 'k3s_node_token') }} sh -"
+  args:
+    creates: /usr/local/bin/k3s
+  become: true

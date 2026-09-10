@@ -16,9 +16,9 @@ usage = 'arg "[tags]" help="Ansible tags to run (optional)"'
 run = '''
 #!/usr/bin/env bash
 if [[ -n "${usage_tags:-}" ]]; then
-  ansible-playbook -i inventory.yaml playbook.yaml --limit gpu_hosts --tags "$usage_tags"
+  sops exec-env ../secrets.yaml "ansible-playbook -i inventory.yaml playbook.yaml --limit gpu_hosts --tags \"$usage_tags\""
 else
-  ansible-playbook -i inventory.yaml playbook.yaml --limit gpu_hosts
+  sops exec-env ../secrets.yaml "ansible-playbook -i inventory.yaml playbook.yaml --limit gpu_hosts"
 fi
 '''
 
@@ -124,6 +124,11 @@ sops exec-env secrets.yaml '
 description = "Install the CloudNativePG operator and its CRDs into the k3s cluster (run once, before applying k8s/postgres)"
 dir = "{{ config_root }}"
 run = "./scripts/k8s-install-cnpg-operator.sh"
+
+[tasks."k3s:bootstrap-node-token"]
+description = "Read the k3s server node-token off the nuc and write it to secrets.yaml as k3s_node_token"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/k3s-bootstrap-node-token.sh"
 
 [tasks."k8s:bootstrap-postgres-credentials"]
 description = "Read the CNPG-generated app user credentials out of k3s and write them to secrets.yaml as postgres_app_user/postgres_app_password"

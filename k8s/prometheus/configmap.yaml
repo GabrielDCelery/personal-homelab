@@ -22,3 +22,6 @@ data:
           - targets: ["10.83.16.98:9100"]
             labels:
               node_name: nuc
+          - targets: ["10.83.16.99:9100"]
+            labels:
+              node_name: desktop

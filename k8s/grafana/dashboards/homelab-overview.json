@@ -150,7 +150,7 @@
       "targets": [
         {
           "expr": "node_hwmon_temp_celsius",
-          "legendFormat": "{{chip}} / {{sensor}}",
+          "legendFormat": "{{node_name}} - {{chip}} / {{sensor}}",
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" }
         }

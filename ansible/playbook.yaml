@@ -15,6 +15,8 @@
       tags: btop
     - role: homelab
       tags: homelab
+    - role: alloy
+      tags: alloy
     - role: wol
       tags: wol
 
@@ -27,6 +29,8 @@
       tags: nvidia_driver
     - role: nvidia_container_toolkit
       tags: nvidia_container_toolkit
+    - role: k3s_agent
+      tags: k3s_agent
     - role: registry
       tags: registry
     - role: ollama
@@ -53,8 +57,6 @@
       tags: dns
     - role: jellyfin
       tags: jellyfin
-    - role: alloy
-      tags: alloy
     - role: postgres
       tags: postgres
   # traefik, registry, infisical roles land here in Phase 2
