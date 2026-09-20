@@ -11,7 +11,7 @@ This is really two independent rebuild tracks that happen to share one machine's
    age-keygen -o ~/.age/homelab.txt
    chmod 600 ~/.age/homelab.txt
    ```
-   See [secret management](../documentation/secret-management.md) for how `secrets.yaml` encryption/editing works day-to-day.
+   See [secret management](../secret-management.md) for how `secrets.yaml` encryption/editing works day-to-day.
 3. Generate an SSH key and copy it to whichever host(s) you're bringing up (skip the one you're not touching yet):
    ```sh
    ssh-keygen -t ed25519 -f ~/.ssh/homelab_admin -C "homelab"
