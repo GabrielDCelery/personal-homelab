@@ -35,5 +35,6 @@
           version: 2
           enableUser: true
     - Registry:
+        icon: docker-compose.png
         href: https://registry-ui.home.gaborzeller.com
-        description: Image registry
+        description: Docker image registry
