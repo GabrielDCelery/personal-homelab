@@ -67,3 +67,4 @@ At the end of this phase the k3s cluster exists but has nothing deployed to it y
 - `mise run jellyfin:scan` — after adding new media files.
 - `mise run dns:configure-blocking` — toggle ad blocking anytime.
 - `mise run ollama-cpu:pull-models` — after adding a new model to `scripts/ollama-cpu-pull-models.sh`.
+- `mise run starwars-armada:ingest` — (re)scrapes the Armada blog and rebuilds the embeddings on the `starwars-armada` pod's persistent volume. Needed once after a fresh volume (nothing to retrieve until this runs), and any time you want to refresh the corpus.

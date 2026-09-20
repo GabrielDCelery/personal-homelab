@@ -19,8 +19,14 @@ spec:
         - name: starwars-armada
           image: registry.home.gaborzeller.com/homelab/starwars-armada:latest
           env:
-            - name: OLLAMA_BASE_URL
+            - name: OLLAMA_HOST
               value: http://ollama-cpu.default.svc.cluster.local:11434
+            - name: EMBEDDING_OLLAMA_HOST
+              value: http://10.83.16.99:11434
+            - name: CHROMA_DB_PATH
+              value: /build/chroma_db
+            - name: EMBEDDING_BATCH_SIZE
+              value: "10"
           ports:
             - containerPort: 8000
           resources:
@@ -31,9 +37,15 @@ spec:
               cpu: "500m"
               memory: 512Mi
           volumeMounts:
-            - name: data
+            - name: raw-data
               mountPath: /data
+            - name: build-data
+              mountPath: /build
       volumes:
-        - name: data
+        - name: raw-data
+          hostPath:
+            path: /srv/starwars-armada
+            type: Directory
+        - name: build-data
           persistentVolumeClaim:
-            claimName: starwars-armada-data
+            claimName: starwars-armada-build

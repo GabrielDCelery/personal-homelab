@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: starwars-armada-data
+  name: starwars-armada-build
   namespace: default
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: starwars-armada-local-path
+  storageClassName: starwars-armada-build-local-path
   resources:
     requests:
       storage: 5Gi

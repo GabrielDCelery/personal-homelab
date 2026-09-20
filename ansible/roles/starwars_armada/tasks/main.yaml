@@ -6,3 +6,21 @@
     group: root
     mode: '0755'
   become: true
+
+- name: Create pvc storage root directory
+  ansible.builtin.file:
+    path: /srv/pvc
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+- name: Create starwars-armada pvc directory
+  ansible.builtin.file:
+    path: /srv/pvc/starwars-armada
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true

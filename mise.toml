@@ -101,6 +101,11 @@ description = "Pull the configured Ollama models into the ollama-cpu pod's persi
 dir = "{{ config_root }}"
 run = "./scripts/ollama-cpu-pull-models.sh"
 
+[tasks."starwars-armada:ingest"]
+description = "Scrape, chunk, and embed the Armada blog corpus into the starwars-armada pod's persistent volume"
+dir = "{{ config_root }}"
+run = "./scripts/starwars-armada-ingest.sh"
+
 [tasks."technitium:bootstrap-api-key"]
 description = "Generate (or reuse) a dedicated Technitium API token via its API and write it to secrets.yaml as technitium_api_key"
 dir = "{{ config_root }}"
