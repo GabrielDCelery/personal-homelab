@@ -96,6 +96,11 @@ description = "Trigger a Jellyfin library rescan via its API (run after adding n
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/jellyfin-scan-library.sh"
 
+[tasks."ollama-cpu:pull-models"]
+description = "Pull the configured Ollama models into the ollama-cpu pod's persistent volume"
+dir = "{{ config_root }}"
+run = "./scripts/ollama-cpu-pull-models.sh"
+
 [tasks."technitium:bootstrap-api-key"]
 description = "Generate (or reuse) a dedicated Technitium API token via its API and write it to secrets.yaml as technitium_api_key"
 dir = "{{ config_root }}"

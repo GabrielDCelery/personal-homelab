@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ollama-cpu
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`ollama-cpu.home.gaborzeller.com`)
+      kind: Rule
+      services:
+        - name: ollama-cpu
+          port: 11434
+  tls:
+    certResolver: cloudflare
+    domains:
+      - main: "*.home.gaborzeller.com"

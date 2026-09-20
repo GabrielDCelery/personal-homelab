@@ -55,6 +55,8 @@
       tags: k3s
     - role: registry
       tags: registry
+    - role: ollama_cpu
+      tags: ollama_cpu
     - role: dns
       tags: dns
     - role: jellyfin
