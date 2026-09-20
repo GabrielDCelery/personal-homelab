@@ -1,0 +1,6 @@
+[Unit]
+Description=Compute homelab service directory sizes for node-exporter textfile collector
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/homelab-dir-size-metrics.sh

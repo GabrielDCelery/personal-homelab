@@ -173,6 +173,37 @@
       "options": {}
     },
     {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Srv Disk Usage by Service",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "homelab_dir_size_bytes",
+          "legendFormat": "{{service}}",
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "prometheus" }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 40,
+            "gradientMode": "none",
+            "spanNulls": false,
+            "stacking": { "mode": "normal", "group": "A" }
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
       "id": 7,
       "type": "logs",
       "title": "Pod Logs",
