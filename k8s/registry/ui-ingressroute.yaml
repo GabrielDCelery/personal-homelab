@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: registry-ui
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`registry-ui.home.gaborzeller.com`)
+      kind: Rule
+      services:
+        - name: registry-ui
+          port: 80
+  tls:
+    certResolver: cloudflare
+    domains:
+      - main: "*.home.gaborzeller.com"

@@ -38,7 +38,7 @@ This is really two independent rebuild tracks that happen to share one machine's
 
 ## Track A — NUC / Kubernetes cluster
 
-The stable core: DNS, Postgres, Jellyfin, monitoring, and the homepage dashboard all run here via k3s. Kubernetes manifests are applied as one batch (Phase A3) rather than resource-by-resource: a Pod that can't pull its image yet just retries (`ImagePullBackOff`) until the dependency shows up, it doesn't block anything else in the same apply. The only hard ordering rule is CRDs/operators before the CRs that use them (that's why CNPG installs before the manifests batch).
+The stable core: DNS, a container registry (`registry.home.gaborzeller.com`, separate from the desktop's), Postgres, Jellyfin, monitoring, and the homepage dashboard all run here via k3s. Kubernetes manifests are applied as one batch (Phase A3) rather than resource-by-resource: a Pod that can't pull its image yet just retries (`ImagePullBackOff`) until the dependency shows up, it doesn't block anything else in the same apply. The only hard ordering rule is CRDs/operators before the CRs that use them (that's why CNPG installs before the manifests batch).
 
 ### Phase A1 — Host provisioning + NUC infra
 
@@ -59,7 +59,7 @@ At the end of this phase the k3s cluster exists but has nothing deployed to it y
 
 ### Phase A3 — Apply all manifests
 
-9. `mise run k8s:deploy:manifests` — Traefik config, Jellyfin, Postgres Cluster (references the ebay-scraper Secret from step 7), Grafana, homepage, Prometheus, Loki, Alloy, node-exporter, kube-state-metrics, intel-gpu-plugin. Some pods (Postgres, Jellyfin) take a moment to reach Ready.
+9. `mise run k8s:deploy:manifests` — Traefik config, Registry, Jellyfin, Postgres Cluster (references the ebay-scraper Secret from step 7), Grafana, homepage, Prometheus, Loki, Alloy, node-exporter, kube-state-metrics, intel-gpu-plugin. Some pods (Postgres, Jellyfin) take a moment to reach Ready.
 10. `mise run k8s:bootstrap-postgres-credentials` — once the Postgres cluster is Ready.
 11. `mise run k8s:grant-ebay-scraper-privileges` — once the cluster is Ready and the `ebay_scraper` managed role exists.
 

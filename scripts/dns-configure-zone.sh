@@ -54,4 +54,22 @@ curl -sS "http://$HOMELAB_NUC_IP:5380/api/zones/records/add" \
   --data-urlencode "overwrite=true" \
   > /dev/null
 
+curl -sS "http://$HOMELAB_NUC_IP:5380/api/zones/records/add" \
+  --data-urlencode "token=$TOKEN" \
+  --data-urlencode "zone=home.gaborzeller.com" \
+  --data-urlencode "domain=registry.home.gaborzeller.com" \
+  --data-urlencode "type=A" \
+  --data-urlencode "ipAddress=$HOMELAB_NUC_IP" \
+  --data-urlencode "overwrite=true" \
+  > /dev/null
+
+curl -sS "http://$HOMELAB_NUC_IP:5380/api/zones/records/add" \
+  --data-urlencode "token=$TOKEN" \
+  --data-urlencode "zone=home.gaborzeller.com" \
+  --data-urlencode "domain=registry-ui.home.gaborzeller.com" \
+  --data-urlencode "type=A" \
+  --data-urlencode "ipAddress=$HOMELAB_NUC_IP" \
+  --data-urlencode "overwrite=true" \
+  > /dev/null
+
 

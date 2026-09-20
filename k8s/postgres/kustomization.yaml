@@ -4,11 +4,3 @@ kind: Kustomization
 resources:
   - storageclass.yaml
   - cluster.yaml
-
-configMapGenerator:
-  - name: local-path-config
-    namespace: kube-system
-    files:
-      - config.json=local-path-config.json
-    options:
-      disableNameSuffixHash: true

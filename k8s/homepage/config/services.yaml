@@ -34,3 +34,6 @@
           enableBlocks: true
           version: 2
           enableUser: true
+    - Registry:
+        href: https://registry-ui.home.gaborzeller.com
+        description: Image registry
