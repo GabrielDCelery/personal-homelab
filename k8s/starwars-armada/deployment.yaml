@@ -14,7 +14,7 @@ spec:
         app: starwars-armada
     spec:
       nodeSelector:
-        kubernetes.io/hostname: homelabnuc
+        homelab-role: nuc
       containers:
         - name: starwars-armada
           image: registry.home.gaborzeller.com/homelab/starwars-armada:latest

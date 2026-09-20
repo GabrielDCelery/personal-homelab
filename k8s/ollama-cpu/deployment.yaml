@@ -13,6 +13,8 @@ spec:
       labels:
         app: ollama-cpu
     spec:
+      nodeSelector:
+        homelab-role: nuc
       containers:
         - name: ollama-cpu
           image: ollama/ollama:0.34.2

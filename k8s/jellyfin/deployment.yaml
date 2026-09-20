@@ -15,6 +15,8 @@ spec:
       labels:
         app: jellyfin
     spec:
+      nodeSelector:
+        homelab-role: nuc
       containers:
         - name: jellyfin
           image: jellyfin/jellyfin:10.11.11

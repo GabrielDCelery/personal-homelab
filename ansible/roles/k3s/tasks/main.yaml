@@ -29,3 +29,11 @@
     replace: "https://{{ ansible_host }}:6443"
   delegate_to: localhost
   become: false
+
+- name: Label node with its homelab role
+  ansible.builtin.command: >
+    kubectl label node {{ ansible_facts.hostname }} homelab-role=nuc --overwrite
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  become: true
+  changed_when: true
