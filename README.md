@@ -24,6 +24,6 @@ archive/cloud/              # Archived cloud deployment (DigitalOcean + k3s)
 
 ## Quick Start
 
-See [documentation/runbook/rebuild-from-scratch.md](documentation/runbook/rebuild-from-scratch.md) for full setup, from a bare machine through both the NUC/k3s and desktop/Compose tracks.
+See [documentation/runbook/rebuild-nuc.md](documentation/runbook/rebuild-nuc.md) and [documentation/runbook/rebuild-desktop.md](documentation/runbook/rebuild-desktop.md) for full setup, from a bare machine through the NUC/k3s and desktop/Compose sides respectively — each is self-contained.
 
 All tasks are run from the repo root via `mise run <task>`; see `mise.toml` for the full list.

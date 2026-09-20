@@ -1,11 +1,11 @@
 # Desktop k3s Node Setup
 
-This joins `homelabdesktop` to the existing k3s cluster on `homelabnuc` as an agent (worker) node. It's additive to [Track B in the rebuild runbook](rebuild-from-scratch.md) — the desktop keeps running its Docker Compose GPU workloads exactly as before; this just also makes it a schedulable k3s node so DaemonSets (Alloy, node-exporter, kube-state-metrics) pick it up for monitoring.
+This joins `homelabdesktop` to the existing k3s cluster on `homelabnuc` as an agent (worker) node. It's additive to [the desktop rebuild runbook](rebuild-desktop.md) — the desktop keeps running its Docker Compose GPU workloads exactly as before; this just also makes it a schedulable k3s node so DaemonSets (Alloy, node-exporter, kube-state-metrics) pick it up for monitoring.
 
-**Prerequisites** — only these two, not the rest of Track A/B:
+**Prerequisites** — only these two, not the rest of either runbook:
 
-- Track A, Phase A1, step 1 only: `mise run ansible:deploy:nuc` has been run (this is what installs the k3s server and creates the node-token; none of Track A's later phases — DNS, k8s secrets, manifests, Jellyfin — matter here).
-- Track B, Phase B1: `mise run ansible:deploy:desktop` (no tags) has been run at least once, for baseline host setup.
+- [rebuild-nuc.md](rebuild-nuc.md), Phase 1, step 1 only: `mise run ansible:deploy:nuc` has been run (this is what installs the k3s server and creates the node-token; none of the NUC runbook's later phases — DNS, k8s secrets, manifests, Jellyfin — matter here).
+- [rebuild-desktop.md](rebuild-desktop.md), Phase 1: `mise run ansible:deploy:desktop` (no tags) has been run at least once, for baseline host setup.
 
 ## Steps
 
