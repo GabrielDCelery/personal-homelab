@@ -6,7 +6,7 @@
     },
     {
       "node": "homelabnuc",
-      "paths": ["/srv/postgresql", "/srv/registry", "/srv/ollama-cpu"]
+      "paths": ["/srv/postgresql", "/srv/registry", "/srv/ollama-cpu", "/srv/starwars-armada"]
     }
   ]
 }

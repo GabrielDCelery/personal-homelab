@@ -57,6 +57,8 @@
       tags: registry
     - role: ollama_cpu
       tags: ollama_cpu
+    - role: starwars_armada
+      tags: starwars_armada
     - role: dns
       tags: dns
     - role: jellyfin

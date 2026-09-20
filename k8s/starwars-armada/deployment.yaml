@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: starwars-armada
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: starwars-armada
+  template:
+    metadata:
+      labels:
+        app: starwars-armada
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: homelabnuc
+      containers:
+        - name: starwars-armada
+          image: registry.home.gaborzeller.com/homelab/starwars-armada:latest
+          env:
+            - name: OLLAMA_BASE_URL
+              value: http://ollama-cpu.default.svc.cluster.local:11434
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: 256Mi
+            limits:
+              cpu: "500m"
+              memory: 512Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: starwars-armada-data

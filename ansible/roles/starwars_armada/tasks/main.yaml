@@ -1,0 +1,8 @@
+- name: Create starwars-armada data directory
+  ansible.builtin.file:
+    path: /srv/starwars-armada
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true

@@ -1,6 +1,6 @@
 # Rebuild NUC From Scratch
 
-The NUC runs the stable core of the homelab via k3s: DNS, a container registry (`registry.home.gaborzeller.com`), a CPU-only Ollama instance (`ollama-cpu.home.gaborzeller.com`, embedding models only — no GPU), Postgres, Jellyfin, monitoring, and the homepage dashboard. Kubernetes manifests are applied as one batch (Phase 3) rather than resource-by-resource: a Pod that can't pull its image yet just retries (`ImagePullBackOff`) until the dependency shows up, it doesn't block anything else in the same apply. The only hard ordering rule is CRDs/operators before the CRs that use them (that's why CNPG installs before the manifests batch). Phases must run in sequence; within a phase, order doesn't matter. Manual/external steps are called out explicitly — everything else is a `mise run` task.
+The NUC runs the stable core of the homelab via k3s: DNS, a container registry (`registry.home.gaborzeller.com`), a CPU-only Ollama instance (`ollama-cpu.home.gaborzeller.com`, embedding models only — no GPU), the Star Wars Armada MCP server (`starwars-armada.home.gaborzeller.com`, retrieval only — queries `ollama-cpu` for embeddings, generation is handled by the calling client), Postgres, Jellyfin, monitoring, and the homepage dashboard. Kubernetes manifests are applied as one batch (Phase 3) rather than resource-by-resource: a Pod that can't pull its image yet just retries (`ImagePullBackOff`) until the dependency shows up, it doesn't block anything else in the same apply. The only hard ordering rule is CRDs/operators before the CRs that use them (that's why CNPG installs before the manifests batch). Phases must run in sequence; within a phase, order doesn't matter. Manual/external steps are called out explicitly — everything else is a `mise run` task.
 
 ## Phase 0 — Local machine setup
 
@@ -49,7 +49,8 @@ At the end of this phase the k3s cluster exists but has nothing deployed to it y
 
 ## Phase 3 — Apply all manifests
 
-9. `mise run k8s:deploy:manifests` — Traefik config, Registry, Ollama (CPU), Jellyfin, Postgres Cluster (references the ebay-scraper Secret from step 7), Grafana, homepage, Prometheus, Loki, Alloy, node-exporter, kube-state-metrics, intel-gpu-plugin. Some pods (Postgres, Jellyfin) take a moment to reach Ready.
+9. `mise run k8s:deploy:manifests` — Traefik config, Registry, Ollama (CPU), the Star Wars Armada MCP server, Jellyfin, Postgres Cluster (references the ebay-scraper Secret from step 7), Grafana, homepage, Prometheus, Loki, Alloy, node-exporter, kube-state-metrics, intel-gpu-plugin. Some pods (Postgres, Jellyfin) take a moment to reach Ready.
+   > **Manual/external step**: `k8s/starwars-armada/deployment.yaml` references `registry.home.gaborzeller.com/homelab/starwars-armada:latest` — an image built from its own separate source repo. Until that image is built and pushed, its pod just sits in `ImagePullBackOff`; it doesn't block anything else in this step.
 10. `mise run k8s:bootstrap-postgres-credentials` — once the Postgres cluster is Ready.
 11. `mise run k8s:grant-ebay-scraper-privileges` — once the cluster is Ready and the `ebay_scraper` managed role exists.
 12. **Manual step**: once the `ollama-cpu` pod is Running, `mise run ollama-cpu:pull-models` — Ollama doesn't ship or auto-pull any models, so this has to be triggered by hand (`kubectl exec`s into the pod and pulls each model listed in `scripts/ollama-cpu-pull-models.sh`, currently just `mxbai-embed-large`). The pulled model persists on its PVC, so this is only needed once per fresh volume.
