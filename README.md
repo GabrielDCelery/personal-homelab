@@ -6,7 +6,7 @@ Homelab running on a NUC (k3s cluster: DNS, registry, Postgres, Jellyfin, monito
 
 ## Architecture
 
-- **NUC**: k3s cluster — DNS (Technitium), self-hosted registry, Postgres (CNPG), Jellyfin, Grafana/Prometheus/Loki, homepage dashboard
+- **NUC**: k3s cluster — DNS (Technitium), self-hosted registry, Postgres (CNPG), Jellyfin, Miniflux (RSS/Atom reader), Grafana/Prometheus/Loki, homepage dashboard
 - **Desktop**: Docker Compose GPU workloads (Ollama, ComfyUI, sd-scripts, custom images) + a k3s agent node for monitoring
 - **IaC**: Ansible, Kubernetes manifests, Docker Compose
 

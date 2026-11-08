@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: homelab-postgres-miniflux
+  namespace: default
+spec:
+  name: miniflux
+  owner: miniflux
+  cluster:
+    name: homelab-postgres

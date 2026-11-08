@@ -36,6 +36,11 @@ spec:
                 secretKeyRef:
                   name: homepage-credentials
                   key: technitiumApiKey
+            - name: HOMEPAGE_VAR_MINIFLUX_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-credentials
+                  key: minifluxApiKey
           volumeMounts:
             - name: config
               mountPath: /app/config

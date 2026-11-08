@@ -1,6 +1,6 @@
 # Rebuild NUC From Scratch
 
-The NUC runs the stable core of the homelab via k3s: DNS, a container registry (`registry.home.gaborzeller.com`), a CPU-only Ollama instance (`ollama-cpu.home.gaborzeller.com`, embedding models only — no GPU), the Star Wars Armada MCP server (`starwars-armada.home.gaborzeller.com`, retrieval only — queries `ollama-cpu` for embeddings, generation is handled by the calling client), Postgres, Jellyfin, monitoring, and the homepage dashboard. Kubernetes manifests are applied as one batch (Phase 3) rather than resource-by-resource: a Pod that can't pull its image yet just retries (`ImagePullBackOff`) until the dependency shows up, it doesn't block anything else in the same apply. The only hard ordering rule is CRDs/operators before the CRs that use them (that's why CNPG installs before the manifests batch). Phases must run in sequence; within a phase, order doesn't matter. Manual/external steps are called out explicitly — everything else is a `mise run` task.
+The NUC runs the stable core of the homelab via k3s: DNS, a container registry (`registry.home.gaborzeller.com`), a CPU-only Ollama instance (`ollama-cpu.home.gaborzeller.com`, embedding models only — no GPU), the Star Wars Armada MCP server (`starwars-armada.home.gaborzeller.com`, retrieval only — queries `ollama-cpu` for embeddings, generation is handled by the calling client), Postgres, Jellyfin, Miniflux (`miniflux.home.gaborzeller.com`, RSS/Atom reader backed by Postgres), monitoring, and the homepage dashboard. Kubernetes manifests are applied as one batch (Phase 3) rather than resource-by-resource: a Pod that can't pull its image yet just retries (`ImagePullBackOff`) until the dependency shows up, it doesn't block anything else in the same apply. The only hard ordering rule is CRDs/operators before the CRs that use them (that's why CNPG installs before the manifests batch). Phases must run in sequence; within a phase, order doesn't matter. Manual/external steps are called out explicitly — everything else is a `mise run` task.
 
 ## Phase 0 — Local machine setup
 
@@ -43,13 +43,13 @@ At the end of this phase the k3s cluster exists but has nothing deployed to it y
 ## Phase 2 — Kubernetes secrets + operators
 
 6. `mise run verify-cloudflare-tokens` (optional sanity check)
-7. `mise run k8s:deploy:secrets` — creates the Cloudflare, Grafana, homepage, and ebay-scraper Secrets in one pass.
-   > **Conditional**: the homepage Secret embeds `jellyfin_api_key` from `secrets.yaml`. If Jellyfin's own data (`/srv/jellyfin`) survived the rebuild, the existing key in `secrets.yaml` is still valid and this is a non-issue. If Jellyfin's data was wiped too, this step will embed a stale/empty key — re-run this task after Phase 4 (Jellyfin bootstrap) completes; it's idempotent.
+7. `mise run k8s:deploy:secrets` — creates the Cloudflare, Grafana, homepage, ebay-scraper, and miniflux Secrets in one pass (generates `miniflux_db_password`/`miniflux_admin_password` into `secrets.yaml` on first run).
+   > **Conditional**: the homepage Secret embeds `jellyfin_api_key` from `secrets.yaml`. If Jellyfin's own data (`/srv/jellyfin`) survived the rebuild, the existing key in `secrets.yaml` is still valid and this is a non-issue. If Jellyfin's data was wiped too, this step will embed a stale/empty key — step 17 re-runs this task once both the Jellyfin and Miniflux keys exist; it's idempotent.
 8. `mise run k8s:install-cnpg-operator`
 
 ## Phase 3 — Apply all manifests
 
-9. `mise run k8s:deploy:manifests` — Traefik config, Registry, Ollama (CPU), the Star Wars Armada MCP server, Jellyfin, Postgres Cluster (references the ebay-scraper Secret from step 7), Grafana, homepage, Prometheus, Loki, Alloy, node-exporter, kube-state-metrics, intel-gpu-plugin. Some pods (Postgres, Jellyfin) take a moment to reach Ready.
+9. `mise run k8s:deploy:manifests` — Traefik config, Registry, Ollama (CPU), the Star Wars Armada MCP server, Jellyfin, Miniflux, Postgres Cluster + `miniflux` Database (reference the ebay-scraper and miniflux Secrets from step 7), Grafana, homepage, Prometheus, Loki, Alloy, node-exporter, kube-state-metrics, intel-gpu-plugin. Some pods (Postgres, Jellyfin) take a moment to reach Ready. Miniflux crash-loops until the Postgres cluster and its `miniflux` Database exist, then recovers on its own.
    > **Manual/external step**: `k8s/starwars-armada/deployment.yaml` references `registry.home.gaborzeller.com/homelab/starwars-armada:latest` — an image built from its own separate source repo. Until that image is built and pushed, its pod just sits in `ImagePullBackOff`; it doesn't block anything else in this step.
 10. `mise run k8s:bootstrap-postgres-credentials` — once the Postgres cluster is Ready.
 11. `mise run k8s:grant-ebay-scraper-privileges` — once the cluster is Ready and the `ebay_scraper` managed role exists.
@@ -60,7 +60,14 @@ At the end of this phase the k3s cluster exists but has nothing deployed to it y
 13. **Manual step**: open `https://jellyfin.home.gaborzeller.com`, complete the setup wizard, set the `admin` password to match `jellyfin_admin_password` in `secrets.yaml`. There's no headless way to do this — Jellyfin has no API for first-run setup in this repo's flow.
 14. `mise run jellyfin:bootstrap-api-key`
 15. `mise run jellyfin:configure`
-16. If step 7 ran before this phase, re-run `mise run k8s:deploy:secrets` to pick up the fresh `jellyfin_api_key` into the homepage widget Secret.
+
+## Phase 5 — Miniflux API key (one-time per fresh Miniflux database)
+
+16. `mise run miniflux:bootstrap-api-key` — once the `miniflux` pod is Ready. No UI step needed: Miniflux creates the `admin` account itself on first start from `miniflux_admin_password`, and this task uses it to create the API key. If the key already in `secrets.yaml` still works (Postgres data survived the rebuild), it's a no-op.
+
+## Phase 6 — Refresh homepage widget keys
+
+17. Re-run `mise run k8s:deploy:secrets` to pick up the fresh `jellyfin_api_key` and `miniflux_api_key` into the homepage widget Secret, then `kubectl rollout restart deployment/homepage` — env vars from a Secret are only read at pod start, so the restart is what actually makes the widgets use the new keys.
 
 ## Day-2 (not part of a rebuild)
 

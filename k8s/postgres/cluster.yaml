@@ -18,6 +18,11 @@ spec:
         login: true
         passwordSecret:
           name: ebay-scraper-password
+      - name: miniflux
+        ensure: present
+        login: true
+        passwordSecret:
+          name: miniflux-db-password
     services:
       additional:
         - selectorType: rw

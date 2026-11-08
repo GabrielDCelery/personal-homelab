@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: miniflux
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: miniflux
+  template:
+    metadata:
+      labels:
+        app: miniflux
+    spec:
+      nodeSelector:
+        homelab-role: nuc
+      containers:
+        - name: miniflux
+          image: miniflux/miniflux:2.3.4
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: miniflux-db-password
+                  key: password
+            - name: DATABASE_URL
+              value: postgres://miniflux:$(DB_PASSWORD)@homelab-postgres-rw.default.svc.cluster.local/miniflux?sslmode=require
+            - name: RUN_MIGRATIONS
+              value: "1"
+            - name: CREATE_ADMIN
+              value: "1"
+            - name: ADMIN_USERNAME
+              value: admin
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: miniflux-admin-credentials
+                  key: password
+            - name: BASE_URL
+              value: https://miniflux.home.gaborzeller.com
+            # Miniflux is the long-term history for the weekly tech-radar distill, so
+            # nothing gets archived (defaults are 60 days read / 180 days unread).
+            - name: CLEANUP_ARCHIVE_READ_DAYS
+              value: "-1"
+            - name: CLEANUP_ARCHIVE_UNREAD_DAYS
+              value: "-1"
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+          resources:
+            requests:
+              cpu: "50m"
+              memory: 64Mi
+            limits:
+              cpu: "500m"
+              memory: 256Mi

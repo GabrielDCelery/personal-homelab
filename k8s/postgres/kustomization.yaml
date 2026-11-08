@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - storageclass.yaml
   - cluster.yaml
+  - database-miniflux.yaml

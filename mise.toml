@@ -96,6 +96,11 @@ description = "Trigger a Jellyfin library rescan via its API (run after adding n
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/jellyfin-scan-library.sh"
 
+[tasks."miniflux:bootstrap-api-key"]
+description = "Generate (or reuse) a dedicated Miniflux API key via its API and write it to secrets.yaml as miniflux_api_key"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/miniflux-bootstrap-api-key.sh"
+
 [tasks."ollama-cpu:pull-models"]
 description = "Pull the configured Ollama models into the ollama-cpu pod's persistent volume"
 dir = "{{ config_root }}"
@@ -117,7 +122,7 @@ dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/verify-cloudflare-tokens.sh"
 
 [tasks."k8s:deploy:secrets"]
-description = "Create/update all secret-backed Kubernetes Secrets (Cloudflare, Grafana, homepage, ebay-scraper) in one pass"
+description = "Create/update all secret-backed Kubernetes Secrets (Cloudflare, Grafana, homepage, ebay-scraper, miniflux) in one pass"
 dir = "{{ config_root }}"
 run = '''
 #!/usr/bin/env bash
@@ -127,6 +132,7 @@ sops exec-env secrets.yaml '
   ./scripts/k8s-deploy-grafana-secret.sh
   ./scripts/k8s-deploy-homepage-secret.sh
   ./scripts/k8s-deploy-ebay-scraper-secret.sh
+  ./scripts/k8s-deploy-miniflux-secret.sh
 '
 '''
 

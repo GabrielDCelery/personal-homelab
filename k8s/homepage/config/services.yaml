@@ -38,3 +38,11 @@
         icon: docker-compose.png
         href: https://registry-ui.home.gaborzeller.com
         description: Docker image registry
+    - Miniflux:
+        icon: miniflux.svg
+        href: https://miniflux.home.gaborzeller.com
+        description: Tech news feeds
+        widget:
+          type: miniflux
+          url: http://miniflux.default.svc.cluster.local:8080
+          key: "{{HOMEPAGE_VAR_MINIFLUX_KEY}}"
