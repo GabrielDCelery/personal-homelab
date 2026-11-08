@@ -101,6 +101,17 @@ description = "Generate (or reuse) a dedicated Miniflux API key via its API and 
 dir = "{{ config_root }}"
 run = "sops exec-env secrets.yaml ./scripts/miniflux-bootstrap-api-key.sh"
 
+[tasks."miniflux:import-feeds"]
+description = "Import the tech radar feeds from k8s/miniflux/feeds.opml into Miniflux (skips feeds it already has)"
+dir = "{{ config_root }}"
+run = "sops exec-env secrets.yaml ./scripts/miniflux-import-feeds.sh"
+
+[tasks."tech-radar:extract"]
+description = "Pull the last N days of Miniflux entries per category into generated/tech-radar/<date>/ for a Claude review"
+dir = "{{ config_root }}"
+usage = 'arg "[days]" help="Window in days (default 7)"'
+run = 'sops exec-env secrets.yaml "./scripts/tech-radar-extract.sh ${usage_days:-7}"'
+
 [tasks."ollama-cpu:pull-models"]
 description = "Pull the configured Ollama models into the ollama-cpu pod's persistent volume"
 dir = "{{ config_root }}"

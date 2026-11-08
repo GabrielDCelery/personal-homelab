@@ -2,3 +2,4 @@
 *.iso
 .env
 ansible/generated/
+generated/

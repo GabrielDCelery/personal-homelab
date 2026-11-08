@@ -64,6 +64,7 @@ At the end of this phase the k3s cluster exists but has nothing deployed to it y
 ## Phase 5 — Miniflux API key (one-time per fresh Miniflux database)
 
 16. `mise run miniflux:bootstrap-api-key` — once the `miniflux` pod is Ready. No UI step needed: Miniflux creates the `admin` account itself on first start from `miniflux_admin_password`, and this task uses it to create the API key. If the key already in `secrets.yaml` still works (Postgres data survived the rebuild), it's a no-op.
+    Then `mise run miniflux:import-feeds` to subscribe to the feeds in `k8s/miniflux/feeds.opml`. Feeds Miniflux already has are skipped, so this is also a no-op if the data survived.
 
 ## Phase 6 — Refresh homepage widget keys
 
