@@ -8,6 +8,9 @@ set -euo pipefail
 BASE_URL="https://miniflux.home.gaborzeller.com"
 DAYS="${1:-7}"
 SNIPPET_CHARS=500
+# High-volume announcement feeds whose titles already say what the entry is. They are
+# listed as one line per entry, no snippet, so a week of them stays cheap to skim.
+TITLES_ONLY_FEEDS='["https://aws.amazon.com/about-aws/whats-new/recent/feed/"]'
 
 if [[ -z "${miniflux_api_key:-}" ]]; then
   echo "miniflux_api_key is not set in secrets.yaml, run 'mise run miniflux:bootstrap-api-key' first" >&2
@@ -51,8 +54,11 @@ api_get "/v1/categories" | jq -r '.[] | "\(.id)\t\(.title)"' | while IFS=$'\t' r
   {
     echo "# $title, $WINDOW ($total entries)"
     echo
-    jq -r --argjson n "$SNIPPET_CHARS" '
-      .entries[]
+    jq -r --argjson n "$SNIPPET_CHARS" --argjson titles_only "$TITLES_ONLY_FEEDS" '
+      .entries
+      | (map(select(.feed.feed_url | IN($titles_only[]))) | sort_by(.feed.title)) as $listed
+      | (map(select(.feed.feed_url | IN($titles_only[]) | not))) as $full
+      | ($full[]
       | (.content
           | gsub("<[^>]*>"; " ")
           | gsub("&nbsp;"; " ") | gsub("&amp;"; "&") | gsub("&lt;"; "<") | gsub("&gt;"; ">")
@@ -60,7 +66,12 @@ api_get "/v1/categories" | jq -r '.[] | "\(.id)\t\(.title)"' | while IFS=$'\t' r
           | gsub("\\s+"; " ")
           | ltrimstr(" ")
           | .[0:$n]) as $snippet
-      | "## \(.title)\n\n- \(.feed.title) · \(.published_at[0:10]) · \(.url)\n\n\($snippet)\n"
+      | "## \(.title)\n\n- \(.feed.title) · \(.published_at[0:10]) · \(.url)\n\n\($snippet)\n"),
+        (if ($listed | length) > 0 then
+          "## Titles only\n",
+          ($listed[] | "- \(.published_at[0:10]) · [\(.title)](\(.url)) · \(.feed.title)"),
+          ""
+        else empty end)
     ' <<< "$entries"
   } > "$OUT_DIR/$title.md"
 
